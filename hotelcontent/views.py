@@ -4,6 +4,8 @@ from django.views.generic import View
 from .forms import LoginForm, RegistrationForm
 from django.contrib.auth import authenticate, login
 from .models import Admin
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 
 class LoginView(View):
@@ -21,7 +23,7 @@ class LoginView(View):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return HttpResponseRedirect('/admin/')
+                return HomePageView().get(request, data=user.username)
         return render(request, 'login.html', {'form': form})
 
 
@@ -50,7 +52,7 @@ class RegistrationView(View):
             )
             user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             login(request, user)
-            return HttpResponseRedirect('/admin/')
+            return HomePageView().get(request, data=user.username)
         context = {'form': form}
         return render(request, 'registration.html', context)
 
@@ -63,7 +65,10 @@ class RegistrationView(View):
 
 class HomePageView(View):
 
-    def get(self, request):
-        admin = Admin.objects.all()
-        context = {'admin': admin}
+    def get(self, request, data):
+        user = data
+        user = User.objects.get(username=user)
+
+        admin = User.objects.all()
+        context = {'admin': admin, 'user': user}
         return render(request, "homepage.html", context)
