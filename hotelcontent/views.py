@@ -53,3 +53,17 @@ class RegistrationView(View):
             return HttpResponseRedirect('/admin/')
         context = {'form': form}
         return render(request, 'registration.html', context)
+
+
+###########################################################
+'''главная страница, где отображаются уже 
+зарегистрированные им отели со следующим описанием - (название отеля, координаты отеля) 
+и две кнопки возле каждого отеля Delete, Details'''
+
+
+class HomePageView(View):
+
+    def get(self, request):
+        admin = Admin.objects.all()
+        context = {'admin': admin}
+        return render(request, "homepage.html", context)
