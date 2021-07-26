@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block title %}
+Login
+{% endblock %}
+
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -9,5 +13,7 @@
     {{ form|crispy }}
     <input type="submit" class="btn btn-primary" value="Sign in">
   </form>
+
+РЕГИСТРАЦИЯ
 
 {% endblock %}
