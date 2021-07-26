@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth.models import User
 
+from .models import Hotel
+
 
 class LoginForm(forms.ModelForm):
-
     password = forms.CharField(widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
@@ -28,7 +29,6 @@ class LoginForm(forms.ModelForm):
 
 
 class RegistrationForm(forms.ModelForm):
-
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     password = forms.CharField(widget=forms.PasswordInput)
     phone = forms.CharField(required=False)
@@ -72,3 +72,27 @@ class RegistrationForm(forms.ModelForm):
         model = User
         fields = ['username', 'password', 'confirm_password',
                   'phone', 'first_name', 'last_name', 'address', 'email']
+
+
+class AddHotelForm(forms.ModelForm):
+    hotel_name = forms.CharField(required=True)
+    hotel_address = forms.CharField(required=True)
+    hotel_email = forms.EmailField(required=True)
+    hotel_url = forms.URLField(required=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['hotel_name'].label = 'Название'
+        self.fields['hotel_address'].label = 'Адрес'
+        self.fields['hotel_email'].label = 'Электронная почта'
+        self.fields['hotel_url'].label = 'Сайт'
+
+    def clean_hotel_address(self):
+        hotel_address = self.cleaned_data['hotel_address']
+        if Hotel.objects.filter(hotel_address=hotel_address).exists():
+            raise forms.ValidationError(f'Отель по адресу {hotel_address} уже зарегистрирован!')
+        return hotel_address
+
+    class Meta:
+        model = Hotel
+        fields = ['hotel_name', 'hotel_address', 'hotel_email', 'hotel_url']

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Новый отель
+{% endblock %}
+
+{% block content %}
+    <h1 class="mt-2"> Добавить отель </h1>
+        <hr class="mt-0 mb-4" color="green">
+    <form method="post" >
+        {% csrf_token %}
+         {{ form|crispy }}
+
+        <hr class="mt-0 mb-4" color="green">
+        <a href="{% url 'homepage' %}"><button type="submit" class="btn btn-success">Добавить</button></a>
+        <span>{{ error }}</span>
+    </form>
+{% endblock %}
