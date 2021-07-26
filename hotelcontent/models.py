@@ -23,6 +23,9 @@ class Hotel(models.Model):
     hotel_email = models.CharField(max_length=200)
     hotel_url = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.hotel_name, self.hotel_address
+
 
 class Room_types(models.Model):
     hotel_type_name = models.CharField(max_length=200)
