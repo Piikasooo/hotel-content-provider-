@@ -3,17 +3,23 @@ from django.shortcuts import render
 from django.views.generic import View
 from .forms import LoginForm, RegistrationForm
 from django.contrib.auth import authenticate, login
-from .models import Admin
-from django.shortcuts import get_object_or_404
+from .models import Admin, Hotel
 from django.contrib.auth.models import User
 
 
 class LoginView(View):
 
     def get(self, request, *args, **kwargs):
-        form = LoginForm(request.POST or None)
-        context = {'form': form}
-        return render(request, 'login.html', context)
+
+        try:
+            del request.session['data']
+            form = LoginForm(request.POST or None)
+            context = {'form': form}
+            return render(request, 'login.html', context)
+        except KeyError:
+            form = LoginForm(request.POST or None)
+            context = {'form': form}
+            return render(request, 'login.html', context)
 
     def post(self, request, *args, **kwargs):
         form = LoginForm(request.POST or None)
@@ -23,7 +29,8 @@ class LoginView(View):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return HomePageView().get(request, data=user.username)
+                request.session['data'] = user.username
+                return HttpResponseRedirect('/enter/homepage/')
         return render(request, 'login.html', {'form': form})
 
 
@@ -52,7 +59,7 @@ class RegistrationView(View):
             )
             user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             login(request, user)
-            return HomePageView().get(request, data=user.username)
+            return HttpResponseRedirect('/enter/login/')
         context = {'form': form}
         return render(request, 'registration.html', context)
 
@@ -65,10 +72,11 @@ class RegistrationView(View):
 
 class HomePageView(View):
 
-    def get(self, request, data):
-        user = data
+    def get(self, request):
+
+        user = request.session['data']
         user = User.objects.get(username=user)
 
-        admin = User.objects.all()
-        context = {'admin': admin, 'user': user}
+        hotels = Hotel.objects.filter(admin=user)  #тут будут браться обьекты модели Hotel
+        context = {'user': user, 'hotels': hotels}
         return render(request, "homepage.html", context)
