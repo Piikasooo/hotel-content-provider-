@@ -11,17 +11,16 @@ class Admin(models.Model):
     phone = models.CharField(max_length=20, verbose_name='Номер телефона', null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name='Адрес', null=True, blank=True)
 
-    #url = models.SlugField(max_length=160, unique=True)
-
     def __str__(self):
         return self.user
 
 
 class Hotel(models.Model):
     hotel_name = models.CharField(max_length=200)
-    hotel_address = models.CharField(max_length=200)
-    hotel_email = models.CharField(max_length=200)
-    hotel_url = models.CharField(max_length=200)
+    hotel_long = models.DecimalField(max_digits=9, decimal_places=6)
+    hotel_lat = models.DecimalField(max_digits=9, decimal_places=6)
+    hotel_email = models.EmailField(max_length=254)
+    hotel_url = models.URLField()
 
 
 class Room_types(models.Model):
