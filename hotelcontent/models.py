@@ -11,8 +11,6 @@ class Admin(models.Model):
     phone = models.CharField(max_length=20, verbose_name='Номер телефона', null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name='Адрес', null=True, blank=True)
 
-    #url = models.SlugField(max_length=160, unique=True)
-
     def __str__(self):
         return self.user
 
@@ -40,8 +38,6 @@ class Rooms(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     room_type = models.ForeignKey(RoomTypes, on_delete=models.CASCADE)
     room_number = models.IntegerField()
-
-    # room_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
     def __str__(self):
         return self.hotel, self.room_number,  # self.room_price#
