@@ -1,5 +1,58 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Hotel, RoomTypes, Rooms
+
+
+class CreateRoomForm(forms.ModelForm):
+
+    hotel = forms.CharField(max_length=120)
+    room_type = forms.CharField(max_length=120)
+    room_number = forms.IntegerField()
+    room_price = forms.DecimalField(max_digits=6, decimal_places=2)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['hotel'].label = 'Введите название отеля'
+        self.fields['room_type'].label = 'Введите тип комнаты'
+        self.fields['room_number'].label = 'Введите номер комнаты'
+        self.fields['room_price'].label = 'Введите цену за комнату'
+
+    def clean_hotel(self):
+        hotel = self.cleaned_data['hotel']
+        if not Hotel.objects.filter(hotel_name=hotel).exists():
+            raise forms.ValidationError(f'Отель с даным названием "{hotel}" не найден в системе')
+        return self.hotel
+
+    def clean_roomtype(self):
+        room_type = self.cleaned_data['roomtype']
+        if not RoomTypes.objects.filter(hotel_type_name=room_type).exists():
+            raise forms.ValidationError(f'Тип комнаты с даным названием "{room_type}" не найден в системе')
+        return self.room_type
+
+    class Meta:
+        model = Rooms
+        fields = ['hotel', 'room_type', 'room_number', 'room_price']
+
+
+class DeleteForm(forms.ModelForm):
+
+    hotelname = forms.CharField(max_length=200)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['hotelname'].label = 'Введите название отеля'
+
+    def clean(self):
+        hotelname = self.cleaned_data['hotelname']
+
+#фильтровать только отели самого админа
+        if not Hotel.objects.filter(hotel_name=hotelname).exists():
+            raise forms.ValidationError(f'Отель с даным названием "{hotelname}" не найден в системе')
+        return self.cleaned_data
+
+    class Meta:
+        model = Hotel
+        fields = ['hotelname']
 
 
 class LoginForm(forms.ModelForm):
@@ -72,3 +125,44 @@ class RegistrationForm(forms.ModelForm):
         model = User
         fields = ['username', 'password', 'confirm_password',
                   'phone', 'first_name', 'last_name', 'address', 'email']
+
+
+class AddHotelForm(forms.ModelForm):
+    hotel_name = forms.CharField(required=True)
+    hotel_long = forms.DecimalField(max_digits=9, decimal_places=6, required=True)
+    hotel_lat = forms.DecimalField(max_digits=9, decimal_places=6, required=True)
+    hotel_email = forms.EmailField(required=True)
+    hotel_url = forms.URLField(required=True)
+    hotel_description = forms.TextInput()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['hotel_name'].label = 'Название'
+        self.fields['hotel_long'].label = 'Долгота'
+        self.fields['hotel_lat'].label = 'Широта'
+        self.fields['hotel_email'].label = 'Электронная почта'
+        self.fields['hotel_url'].label = 'Сайт'
+        self.fields['hotel_description'].label = 'Описание'
+
+    def clean(self):
+        hotel_name = self.cleaned_data['hotel_name']
+        hotel_long = self.cleaned_data['hotel_long']
+        hotel_lat = self.cleaned_data['hotel_lat']
+        hotel_email = self.cleaned_data['hotel_email']
+        hotel_url = self.cleaned_data['hotel_url']
+        hotel_description = self.cleaned_data['hotel_description']
+
+        if Hotel.objects.filter(hotel_long=hotel_long, hotel_lat=hotel_lat).exists():
+            raise forms.ValidationError(f'Отель по координатам {hotel_lat}, {hotel_long} уже зарегистрирован!')
+        elif Hotel.objects.filter(hotel_email=hotel_email).exists():
+            raise forms.ValidationError(f'Отель с электронным адресом {hotel_email} уже зарегистрирован!')
+        elif Hotel.objects.filter(hotel_url=hotel_url).exists():
+            raise forms.ValidationError(f'Отель с сайтом {hotel_url} уже зарегистрирован!')
+
+        return self.cleaned_data
+
+    class Meta:
+        model = Hotel
+        fields = ['hotel_name', 'hotel_long', 'hotel_lat', 'hotel_email', 'hotel_url', 'hotel_description']
+
+

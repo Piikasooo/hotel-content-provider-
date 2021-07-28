@@ -1,30 +1,16 @@
 {% extends 'base.html' %}
 
 {% block title %}
-HomePage
+Create New Room
 {% endblock %}
 
 {% load crispy_forms_tags %}
 
-
 {% block content %}
 
 
-
-    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
-                 HomePage User - {{ user.username }}
-        </a>
-            <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
-    </nav>
-
-    <hr>
-    <hr>
-    <hr>
-
-
     <div class="my-3 p-3 bg-white rounded box-shadow">
-        <h6 class="border-bottom border-gray pb-2 mb-0"> Отели </h6>
+        <h6 class="border-bottom border-gray pb-2 mb-0"> Доступные отели </h6>
 
         {% for hotel in hotels %}
 
@@ -40,19 +26,16 @@ HomePage
 
     </div>
 
-    <div class="d-grid gap-2 col-6 mx-auto">
-        <a href="{% url 'add_hotel' %}" class="btn btn-success">Register New Hotel</a>
-        <a href="{% url 'createroom' %}" class="btn btn-info">Create New Room</a>
-    </div>
+
 
     <hr color="blue">
     <hr color="red">
 
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <input type="submit" class="btn btn-danger" value="Delete">
-    </form>
 
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="Create new Room">
+  </form>
 
 {% endblock %}
