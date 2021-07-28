@@ -13,8 +13,6 @@ from pathlib import Path
 import os
 from environs import Env
 
-# get_env = os.environ.get
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,12 +24,13 @@ env = Env()
 env.read_env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-$xdqyniyet!wrk3ls$nd1b^o%n%hkbt4)(-ipv4=2n+x_nwluv"
+SECRET_KEY = env.str('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.str('DEBUG')
 
 ALLOWED_HOSTS = []
+
 
 # Application definition
 
@@ -46,6 +45,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'hotelcontent'
 ]
+
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -79,7 +79,9 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'Hotel_content_provider.wsgi.application'
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -88,13 +90,14 @@ WSGI_APPLICATION = 'Hotel_content_provider.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_db',
-        'USER': 'postgres',
-        'PASSWORD': '12345',
+        'NAME': env.str('DB_NAME'),
+        'USER': env.str('DB_USER'),
+        'PASSWORD': env.str('DB_PASS'),
         'HOST': 'localhost',
-        'PORT': '5433',
+        'PORT': '5432',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -114,6 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -126,6 +130,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
