@@ -81,12 +81,14 @@ class AddHotelView(View):
         if form.is_valid():
             new_hotel = form.save(commit=False)
             new_hotel.hotel_name = form.cleaned_data['hotel_name']
-            new_hotel.hotel_address = form.cleaned_data['hotel_address']
+            new_hotel.hotel_long = form.cleaned_data['hotel_long']
+            new_hotel.hotel_lat = form.cleaned_data['hotel_lat']
             new_hotel.hotel_email = form.cleaned_data['hotel_email']
             new_hotel.hotel_url = form.cleaned_data['hotel_url']
+            new_hotel.hotel_description = form.cleaned_data['hotel_description']
 
             new_hotel.save()
 
-            return HttpResponseRedirect('/homepage/')
+            return HttpResponseRedirect('/enter/homepage/')
         context = {'form': form}
         return render(request, 'add_hotel.html', context)
