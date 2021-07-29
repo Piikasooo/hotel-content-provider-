@@ -1,10 +1,62 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Hotel, RoomTypes, Rooms
 
-from .models import Hotel
+
+class CreateRoomForm(forms.ModelForm):
+
+    hotel = forms.CharField(max_length=120)
+    room_type = forms.CharField(max_length=120)
+    room_number = forms.IntegerField()
+    room_price = forms.DecimalField(max_digits=6, decimal_places=2)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['hotel'].label = 'Введите название отеля'
+        self.fields['room_type'].label = 'Введите тип комнаты'
+        self.fields['room_number'].label = 'Введите номер комнаты'
+        self.fields['room_price'].label = 'Введите цену за комнату'
+
+    def clean_hotel(self):
+        hotel = self.cleaned_data['hotel']
+        if not Hotel.objects.filter(hotel_name=hotel).exists():
+            raise forms.ValidationError(f'Отель с даным названием "{hotel}" не найден в системе')
+        return self.hotel
+
+    def clean_roomtype(self):
+        room_type = self.cleaned_data['roomtype']
+        if not RoomTypes.objects.filter(hotel_type_name=room_type).exists():
+            raise forms.ValidationError(f'Тип комнаты с даным названием "{room_type}" не найден в системе')
+        return self.room_type
+
+    class Meta:
+        model = Rooms
+        fields = ['hotel', 'room_type', 'room_number', 'room_price']
+
+
+class DeleteForm(forms.ModelForm):
+
+    hotelname = forms.CharField(max_length=200)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['hotelname'].label = 'Введите название отеля'
+
+    def clean(self):
+        hotelname = self.cleaned_data['hotelname']
+
+#фильтровать только отели самого админа
+        if not Hotel.objects.filter(hotel_name=hotelname).exists():
+            raise forms.ValidationError(f'Отель с даным названием "{hotelname}" не найден в системе')
+        return self.cleaned_data
+
+    class Meta:
+        model = Hotel
+        fields = ['hotelname']
 
 
 class LoginForm(forms.ModelForm):
+
     password = forms.CharField(widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
@@ -29,6 +81,7 @@ class LoginForm(forms.ModelForm):
 
 
 class RegistrationForm(forms.ModelForm):
+
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     password = forms.CharField(widget=forms.PasswordInput)
     phone = forms.CharField(required=False)
@@ -111,3 +164,5 @@ class AddHotelForm(forms.ModelForm):
     class Meta:
         model = Hotel
         fields = ['hotel_name', 'hotel_long', 'hotel_lat', 'hotel_email', 'hotel_url', 'hotel_description']
+
+
