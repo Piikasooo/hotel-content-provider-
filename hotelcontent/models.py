@@ -84,14 +84,14 @@ class Bookings(models.Model):
         return '{}/{}'.format(self.agent_reservation, self.hotels, self.checkin, self.checkout, self.rate_price)
 
 
-class Coef(models.Model):
+class Coefficient(models.Model):
     start_date = models.DateField(default=date.today())
     end_date = models.DateField(default=date.today())
-    coef = models.DecimalField(max_digits=7, decimal_places=2, default=1.1)
+    coefficient = models.DecimalField(max_digits=7, decimal_places=2, default=1.1)
     hotel = models.ForeignKey(Hotel, verbose_name="Отель", on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{}/{}'.format(self.coef, self.start_date, self.end_date)
+        return '{}/{}'.format(self.coefficient, self.start_date, self.end_date)
 
 
 class RateAmenity(models.Model):
