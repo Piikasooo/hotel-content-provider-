@@ -1,5 +1,5 @@
 from datetime import date
-
+from django.urls import reverse
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -26,10 +26,13 @@ class Hotel(models.Model):
     admin = models.ForeignKey(User, verbose_name="Администратор", on_delete=models.CASCADE)
     hotel_description = models.TextField(default='Описание отеля')
 
-    #url = models.SlugField(max_length=160, unique=True)
+    url = models.SlugField(max_length=160, unique=True)
 
     def __str__(self):
         return self.hotel_name
+
+    def get_absolute_url(self):
+        return reverse("hotel_detail", kwargs={"slug": self.url})
 
 
 class RoomTypes(models.Model):
@@ -37,25 +40,33 @@ class RoomTypes(models.Model):
     room_type_description = models.CharField(max_length=200)
     room_type_price = models.DecimalField(max_digits=6, decimal_places=2, default=300)
 
+    hotel = models.ForeignKey(Hotel, verbose_name="Отель", on_delete=models.CASCADE, default=0)
+
     def __str__(self):
         return '{}/{}'.format(self.room_type_name, self.room_type_price)
 
 
 class Amenity(models.Model):
     amenity_name = models.CharField(max_length=200)
-    amenity_price = models.DecimalField(max_digits=7, decimal_places=2, default=50)
+    amenity_price = models.DecimalField(max_digits=7, decimal_places=2)
+
+    hotel = models.ForeignKey(Hotel, verbose_name="Отель", on_delete=models.CASCADE, default=0)
 
     def __str__(self):
         return '{}/{}'.format(self.amenity_name, self.amenity_price)
 
 
 class Rooms(models.Model):
+
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     room_type = models.ForeignKey(RoomTypes, on_delete=models.CASCADE)
     room_number = models.IntegerField()
 
+    ####окончательная цена за комнату: тип комната + amenities
+    room_rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00)
+
     def __str__(self):
-        return '{}/{}'.format(self.hotel, self.room_number, self.room_type)
+        return '{}/{}'.format(self.hotel, self.room_number, self.room_type, self.room_rate_price)
 
 
 class AgentReservation(models.Model):
@@ -84,19 +95,19 @@ class Bookings(models.Model):
         return '{}/{}'.format(self.agent_reservation, self.hotels, self.checkin, self.checkout, self.rate_price)
 
 
-class Coef(models.Model):
+class Coefficient(models.Model):
     start_date = models.DateField(default=date.today())
     end_date = models.DateField(default=date.today())
-    coef = models.DecimalField(max_digits=7, decimal_places=2, default=1.1)
+    coefficient = models.DecimalField(max_digits=7, decimal_places=2, default=1.1)
     hotel = models.ForeignKey(Hotel, verbose_name="Отель", on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{}/{}'.format(self.coef, self.start_date, self.end_date)
+        return '{}/{}'.format(self.coefficient, self.start_date, self.end_date)
 
 
 class RateAmenity(models.Model):
-    room = models.ForeignKey(Rooms, on_delete=models.CASCADE)
-    amenity = models.ManyToManyField(Amenity)
+    room = models.ForeignKey(Rooms, verbose_name="Комната", on_delete=models.CASCADE, default=0)
+    amenity = models.ForeignKey(Amenity, verbose_name="Amenity", on_delete=models.CASCADE, default=0)
 
     def __str__(self):
         return '{}/{}'.format(self.room, self.amenity)
