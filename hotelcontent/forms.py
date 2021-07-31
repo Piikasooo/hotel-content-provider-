@@ -3,19 +3,17 @@ from django.contrib.auth.models import User
 from .models import Hotel, RoomTypes, Rooms
 
 
-class CreateRoomForm(forms.ModelForm):
+class AddRoomForm(forms.ModelForm):
 
     hotel = forms.CharField(max_length=120)
     room_type = forms.CharField(max_length=120)
     room_number = forms.IntegerField()
-    room_price = forms.DecimalField(max_digits=6, decimal_places=2)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['hotel'].label = 'Введите название отеля'
         self.fields['room_type'].label = 'Введите тип комнаты'
         self.fields['room_number'].label = 'Введите номер комнаты'
-        self.fields['room_price'].label = 'Введите цену за комнату'
 
     def clean_hotel(self):
         hotel = self.cleaned_data['hotel']
@@ -23,15 +21,15 @@ class CreateRoomForm(forms.ModelForm):
             raise forms.ValidationError(f'Отель с даным названием "{hotel}" не найден в системе')
         return self.hotel
 
-    def clean_roomtype(self):
-        room_type = self.cleaned_data['roomtype']
+    def clean_room_type(self):
+        room_type = self.cleaned_data['room_type']
         if not RoomTypes.objects.filter(hotel_type_name=room_type).exists():
             raise forms.ValidationError(f'Тип комнаты с даным названием "{room_type}" не найден в системе')
         return self.room_type
 
     class Meta:
         model = Rooms
-        fields = ['hotel', 'room_type', 'room_number', 'room_price']
+        fields = ['hotel', 'room_type', 'room_number']
 
 
 class DeleteForm(forms.ModelForm):
@@ -45,7 +43,7 @@ class DeleteForm(forms.ModelForm):
     def clean(self):
         hotelname = self.cleaned_data['hotelname']
 
-#фильтровать только отели самого админа
+# фильтровать только отели самого админа
         if not Hotel.objects.filter(hotel_name=hotelname).exists():
             raise forms.ValidationError(f'Отель с даным названием "{hotelname}" не найден в системе')
         return self.cleaned_data
