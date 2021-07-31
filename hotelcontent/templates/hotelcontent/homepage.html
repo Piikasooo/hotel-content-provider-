@@ -23,6 +23,15 @@ HomePage
     <hr>
 
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-success">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
     <div class="my-3 p-3 bg-white rounded box-shadow">
         <h6 class="border-bottom border-gray pb-2 mb-0"> Отели </h6>
 
@@ -43,15 +52,6 @@ HomePage
     <div class="d-grid gap-2 col-6 mx-auto">
         <a href="{% url 'add_hotel' %}" class="btn btn-success">Register New Hotel</a>
     </div>
-
-    <hr color="blue">
-    <hr color="red">
-
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <input type="submit" class="btn btn-danger" value="Delete">
-    </form>
 
 
 {% endblock %}
