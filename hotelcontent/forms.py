@@ -1,27 +1,33 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Hotel, RoomTypes, Rooms
+from .models import Hotel, RoomTypes, Rooms, Amenity
+
+
+class CreateAmenityForm(forms.ModelForm):
+
+    amenity_name = forms.CharField(max_length=200)
+    amenity_price = forms.DecimalField(max_digits=7, decimal_places=2)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['amenity_name'].label = 'Введите название amenity'
+        self.fields['amenity_price'].label = 'Введите цену за amenity'
+
+    class Meta:
+        model = Amenity
+        fields = ['amenity_name', 'amenity_price']
 
 
 class CreateRoomForm(forms.ModelForm):
 
-    hotel = forms.CharField(max_length=120)
     room_type = forms.CharField(max_length=120)
     room_number = forms.IntegerField()
     room_price = forms.DecimalField(max_digits=6, decimal_places=2)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['hotel'].label = 'Введите название отеля'
         self.fields['room_type'].label = 'Введите тип комнаты'
         self.fields['room_number'].label = 'Введите номер комнаты'
-        self.fields['room_price'].label = 'Введите цену за комнату'
-
-    def clean_hotel(self):
-        hotel = self.cleaned_data['hotel']
-        if not Hotel.objects.filter(hotel_name=hotel).exists():
-            raise forms.ValidationError(f'Отель с даным названием "{hotel}" не найден в системе')
-        return self.hotel
 
     def clean_roomtype(self):
         room_type = self.cleaned_data['roomtype']
@@ -31,7 +37,7 @@ class CreateRoomForm(forms.ModelForm):
 
     class Meta:
         model = Rooms
-        fields = ['hotel', 'room_type', 'room_number', 'room_price']
+        fields = ['room_type', 'room_number', 'room_price']
 
 
 class DeleteForm(forms.ModelForm):
