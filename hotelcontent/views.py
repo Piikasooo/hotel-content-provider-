@@ -1,9 +1,9 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
-from .forms import LoginForm, RegistrationForm, DeleteForm, CreateRoomForm, AddHotelForm
+from .forms import LoginForm, RegistrationForm, DeleteForm, AddRoomForm, AddHotelForm
 from django.contrib.auth import authenticate, login
-from .models import Admin, Hotel
+from .models import Admin, Hotel, Rooms
 from django.contrib.auth.models import User
 
 
@@ -30,7 +30,7 @@ class LoginView(View):
             if user:
                 login(request, user)
                 request.session['data'] = user.username
-                return HttpResponseRedirect('/enter/homepage/')
+                return HttpResponseRedirect('/hotels/')
         return render(request, 'login.html', {'form': form})
 
 
@@ -59,15 +59,9 @@ class RegistrationView(View):
             )
             user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             login(request, user)
-            return HttpResponseRedirect('/enter/login/')
+            return HttpResponseRedirect('/login/')
         context = {'form': form}
         return render(request, 'registration.html', context)
-
-
-###########################################################
-'''главная страница, где отображаются уже 
-зарегистрированные им отели со следующим описанием - (название отеля, координаты отеля) 
-и две кнопки возле каждого отеля Delete, Details'''
 
 
 class HomePageView(View):
@@ -80,41 +74,51 @@ class HomePageView(View):
         user = User.objects.get(username=user)
 
         hotels = Hotel.objects.filter(admin=user)
-        context = {'user': user, 'hotels': hotels, 'form': form}
-        return render(request, "homepage.html", context)
+        context = {
+            'user': user,
+            'hotels': hotels,
+            'form': form
+        }
+        return render(request, "hotels.html", context)
 
     def post(self, request, *args, **kwargs):
         form = DeleteForm(request.POST or None)
         if form.is_valid():
             user = request.session['data']
             user = User.objects.get(username=user)
-            hotelname = form.cleaned_data['hotelname']
+            hotel_name = form.cleaned_data['hotel_name']
             hotels = Hotel.objects.filter(admin=user)
             for hotel in hotels:
-                if hotel.hotel_name == hotelname:
+                if hotel.hotel_name == hotel_name:
                     hotel.delete()
                     hotels = Hotel.objects.filter(admin=user)
                     context = {'user': user, 'hotels': hotels, 'form': form}
-                    return render(request, "homepage.html", context)
+                    return render(request, "hotels.html", context)
         user = request.session['data']
         user = User.objects.get(username=user)
         hotels = Hotel.objects.filter(admin=user)
-        context = {'user': user, 'hotels': hotels, 'form': form}
-        return render(request, "homepage.html", context)
+        context = {
+            'user': user,
+            'hotels': hotels,
+            'form': form
+        }
+        return render(request, "hotels.html", context)
 
 
-class CreateRoom(View):
+class AddRoomView(View):
 
     def get(self, request, *args, **kwargs):
-
-        form = CreateRoomForm(request.POST or None)
+        form = AddRoomForm(request.POST or None)
 
         user = request.session['data']
         user = User.objects.get(username=user)
 
         hotels = Hotel.objects.filter(admin=user)
-        context = {'hotels': hotels, 'form': form}
-        return render(request, "createroom.html", context)
+        context = {
+            'hotels': hotels,
+            'form': form
+        }
+        return render(request, "add_room.html", context)
 
 
 class AddHotelView(View):
@@ -140,10 +144,37 @@ class AddHotelView(View):
 
             new_hotel.save()
 
-            return HttpResponseRedirect('/enter/homepage/')
+            return HttpResponseRedirect('/hotels/')
         context = {'form': form}
         return render(request, 'add_hotel.html', context)
 
 
+class RoomsView(View):
+
+    def get(self, request, hotel_name):
+
+        user = request.session['data']
+        user = User.objects.get(username=user)
+
+        hotels = Hotel.objects.get(admin=user, hotel_name=hotel_name)
+        rooms = Rooms.objects.filter(hotel=hotels)
+        context = {
+            'user': user,
+            'rooms': rooms
+        }
+        return render(request, "rooms.html", context)
 
 
+
+class DetailsView(View):
+
+    def get(self, request, hotel_name):
+        user = request.session['data']
+        user = User.objects.get(username=user)
+
+        hotels = Hotel.objects.get(admin=user, hotel_name=hotel_name)
+        context = {
+            'user': user,
+            'hotels': hotels
+        }
+        return render(request, "details.html", context)
