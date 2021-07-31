@@ -21,6 +21,15 @@ Create New Room
     <hr>
 
 
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
 
     <hr color="blue">
     <hr color="red">
@@ -31,6 +40,7 @@ Create New Room
 
 <form method="post" class="ckeck">
   {% csrf_token %}
+
 
     <div class="mb-3">
         <label for="formGroupExampleInput" class="form-label"><h5>Введите номер комнаты</h5></label>
@@ -52,7 +62,7 @@ Create New Room
     <h5>Доступные типы комнат:</h5>
 
     <select class="form-select" aria-label="Default select example" name="dropdown">
-  <option selected>Select type's room</option>
+  <option selected>Select type room</option>
 
             {% for room_type in room_types %}
 

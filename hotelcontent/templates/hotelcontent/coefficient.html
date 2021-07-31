@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-CreateAmenity
+CreateCoefficient
 {% endblock %}
 
 {% load crispy_forms_tags %}
@@ -10,7 +10,7 @@ CreateAmenity
 
 <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
-                 CreateAmenity User - {{ user.username }}
+                 CreateCoefficient User - {{ user.username }}
         </a>
         <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
 </nav>
@@ -21,24 +21,26 @@ CreateAmenity
 
 <nav class="navbar navbar-light bg-light">
   <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">Create Amenity for {{ hotel.hotel_name }}</span>
+    <span class="navbar-brand mb-0 h1">Create Coefficient for {{ hotel.hotel_name }}</span>
   </div>
 </nav>
 
-
-{% if amenities %}
+{% if coefficients %}
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">Amenity name</th>
-      <th scope="col">Amenity price</th>
+      <th scope="col">Start date</th>
+      <th scope="col">End date</th>
+      <th scope="col">Coefficient</th>
     </tr>
   </thead>
   <tbody>
-  {% for amenity in amenities %}
+  {% for coefficient in coefficients %}
     <tr>
-      <td>{{ amenity.amenity_name }}</td>
-      <td>{{ amenity.amenity_price }}</td>
+      <td>{{ coefficient.start_date }}</td>
+      <td>{{ coefficient.end_date }}</td>
+      <td>{{ coefficient.coefficient }}</td>
+        <a href="{% url 'login' %}" class="btn btn-outline-secondary">Delete</a>
     </tr>
     {% endfor %}
   </tbody>
@@ -46,23 +48,11 @@ CreateAmenity
 {% endif %}
 
 
-<hr class="text-dark">
-
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li><h3 class="text-danger">{{ message }}</h3></li>
-    {% endfor %}
-</ul>
-{% endif %}
-
-
-
 
   <form action="" method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input type="submit" class="btn btn-primary" value="Add amenity">
+    <input type="submit" class="btn btn-primary" value="Add coefficient">
   </form>
 
 
