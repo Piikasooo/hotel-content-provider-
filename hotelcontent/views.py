@@ -216,41 +216,55 @@ class CreateAmenityView(View):
 
         hotel = Hotel.objects.get(url=slug, admin=user)
 
-        amenities = Amenity.objects.filter(hotel=hotel)
+        amenities = Amenity.objects.filter(hotel=hotel, vision=True)
         context = {'user': user, 'hotel': hotel, 'form': form, 'amenities': amenities}
         return render(request, "createamenity.html", context)
 
     def post(self, request, slug):
-        form = CreateAmenityForm(request.POST or None)
-        user = request.session['data']
 
-        user = User.objects.get(username=user)
+        amenity_id = request.POST.get('id')
 
-        if form.is_valid():
+        if amenity_id:
 
-            hotel = Hotel.objects.get(url=slug, admin=user)
-
-            amenity = form.save(commit=False)
-
-            amenity_name = form.cleaned_data['amenity_name']
-
-            if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
-                context = {'user': user, 'hotel': hotel, 'form': form}
-                alert = 'This amenity name exist'
-                messages.info(request, alert)
-                return render(request, "createamenity.html", context)
-
-            amenity.amenity_name = amenity_name
-            amenity.amenity_price = form.cleaned_data['amenity_price']
-            amenity.hotel = hotel
+            amenity = Amenity.objects.get(id=int(amenity_id))
+            amenity.vision = False
             amenity.save()
 
-            alert = 'Successfully created new amenity'
+            alert = 'Successfully deleted amenity'
             messages.info(request, alert)
             return HttpResponseRedirect('/homepage/')
-        hotel = Hotel.objects.get(url=slug)
-        context = {'user': user, 'hotel': hotel, 'form': form}
-        return render(request, "createamenity.html", context)
+
+        else:
+            form = CreateAmenityForm(request.POST or None)
+            user = request.session['data']
+
+            user = User.objects.get(username=user)
+
+            if form.is_valid():
+
+                hotel = Hotel.objects.get(url=slug, admin=user)
+
+                amenity = form.save(commit=False)
+
+                amenity_name = form.cleaned_data['amenity_name']
+
+                if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
+                    context = {'user': user, 'hotel': hotel, 'form': form}
+                    alert = 'This amenity name exist'
+                    messages.info(request, alert)
+                    return render(request, "createamenity.html", context)
+
+                amenity.amenity_name = amenity_name
+                amenity.amenity_price = form.cleaned_data['amenity_price']
+                amenity.hotel = hotel
+                amenity.save()
+
+                alert = 'Successfully created new amenity'
+                messages.info(request, alert)
+                return HttpResponseRedirect('/homepage/')
+            hotel = Hotel.objects.get(url=slug)
+            context = {'user': user, 'hotel': hotel, 'form': form}
+            return render(request, "createamenity.html", context)
 
 
 class CreateCoefficientView(View):
@@ -267,26 +281,37 @@ class CreateCoefficientView(View):
         return render(request, "coefficient.html", context)
 
     def post(self, request, slug):
-        form = CreateCoefficientForm(request.POST or None)
-        user = request.session['data']
-        user = User.objects.get(username=user)
 
-        hotel = Hotel.objects.get(url=slug, admin=user)
+        coef_id = request.POST.get('id')
 
-        if form.is_valid():
+        if coef_id:
+            coefficient = Coefficient.objects.get(id=int(coef_id))
+            coefficient.delete()
 
-            coefficient = form.save(commit=False)
-            coefficient.start_date = form.cleaned_data['start_date']
-            coefficient.end_date = form.cleaned_data['end_date']
-            coefficient.coefficient = form.cleaned_data['coefficient']
-            coefficient.hotel = hotel
-            coefficient.save()
-
-            alert = 'Successfully created new coefficient'
+            alert = 'Successfully deleted coefficient'
             messages.info(request, alert)
             return HttpResponseRedirect('/homepage/')
-        context = {'user': user, 'hotel': hotel, 'form': form}
-        return render(request, "coefficient.html", context)
+        else:
+            form = CreateCoefficientForm(request.POST or None)
+            user = request.session['data']
+            user = User.objects.get(username=user)
+
+            hotel = Hotel.objects.get(url=slug, admin=user)
+
+            if form.is_valid():
+
+                coefficient = form.save(commit=False)
+                coefficient.start_date = form.cleaned_data['start_date']
+                coefficient.end_date = form.cleaned_data['end_date']
+                coefficient.coefficient = form.cleaned_data['coefficient']
+                coefficient.hotel = hotel
+                coefficient.save()
+
+                alert = 'Successfully created new coefficient'
+                messages.info(request, alert)
+                return HttpResponseRedirect('/homepage/')
+            context = {'user': user, 'hotel': hotel, 'form': form}
+            return render(request, "coefficient.html", context)
 
 
 
