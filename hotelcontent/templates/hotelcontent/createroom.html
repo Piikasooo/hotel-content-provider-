@@ -11,7 +11,7 @@ Create New Room
 
     <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
-                 CreateNewRoom User - {{ user.username }} Hotel - {{ hotel.hotel_name }}
+                 CreateNewRoom User - {{ user.username }}
         </a>
             <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
     </nav>
@@ -31,13 +31,13 @@ Create New Room
 
 
 
-    <hr color="blue">
-    <hr color="red">
 
+<div class="my-3 p-4 bg-body rounded shadow">
 
+<div class="px-4 py-1 my-1 text-center">
 
-
-
+    <h4 class="fw-bold">Create new room in {{ hotel.hotel_name }}</h4>
+    <hr>
 <form method="post" class="ckeck">
   {% csrf_token %}
 
@@ -47,7 +47,6 @@ Create New Room
         <input type="text" class="form-control" id="formGroupExampleInput" placeholder="For Example: 223" name="room_number">
     </div>
 
-    <hr>
 
     <h5>Доступные услуги для комнаты:</h5>
     {% for amenity in amenities %}
@@ -62,26 +61,20 @@ Create New Room
     <h5>Доступные типы комнат:</h5>
 
     <select class="form-select" aria-label="Default select example" name="dropdown">
-  <option selected>Select type room</option>
+    <option selected>Select type room</option>
 
             {% for room_type in room_types %}
 
-  <option  value="{{ room_type.room_type_name }}" name="room_type">{{ room_type.room_type_name }} - {{ room_type.room_type_price }}</option>
+    <option  value="{{ room_type.room_type_name }}" name="room_type">{{ room_type.room_type_name }} - {{ room_type.room_type_price }}</option>
 
 
             {% endfor %}
 
-</select>
-<hr>
-        <h5>Price Rate:</h5>
-
-    <div class="input-group flex-nowrap">
-  <span class="input-group-text" id="addon-wrapping">$</span>
-  <input type="text" class="form-control" placeholder="Price" aria-label="Username" aria-describedby="addon-wrapping" readonly>
-</div>
+    </select>
     <hr>
     <button type="submit" class="btn btn-secondary">Create new room</button>
 
 </form>
-
+</div>
+  </div>
 {% endblock %}
