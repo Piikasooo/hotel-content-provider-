@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}
+CreateRoomType
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+                 CreateRoomType User - {{ user.username }}
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+</nav>
+
+<hr>
+<hr>
+<hr>
+
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+      <span class="fs-4">Список типов комнат</span>
+    </a>
+    <hr>
+    <ul>
+        {% for roomtype in room_type %}
+      <li>
+          {{ roomtype.room_type_name }} - {{ roomtype.room_type_price }}.
+          Описание: {{ roomtype.room_type_description }}
+      </li>
+        {% endfor %}
+    </ul>
+  </div>
+
+<hr>
+
+<nav class="navbar navbar-light bg-light">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">Create Room Type for {{ hotel.hotel_name }}</span>
+  </div>
+</nav>
+
+
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="Add Room Type">
+  </form>
+
+
+{% endblock %}

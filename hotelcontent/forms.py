@@ -1,35 +1,44 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Hotel, RoomTypes, Rooms
+from .models import Hotel, RoomTypes, Rooms, Amenity
 
 
-class AddRoomForm(forms.ModelForm):
+class CreateAmenityForm(forms.ModelForm):
+
+    amenity_name = forms.CharField(max_length=200)
+    amenity_price = forms.DecimalField(max_digits=7, decimal_places=2)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['amenity_name'].label = 'Введите название amenity'
+        self.fields['amenity_price'].label = 'Введите цену за amenity'
+
+    class Meta:
+        model = Amenity
+        fields = ['amenity_name', 'amenity_price']
+
+
+class CreateRoomForm(forms.ModelForm):
 
     hotel = forms.CharField(max_length=120)
     room_type = forms.CharField(max_length=120)
     room_number = forms.IntegerField()
+    room_price = forms.DecimalField(max_digits=6, decimal_places=2)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['hotel'].label = 'Введите название отеля'
         self.fields['room_type'].label = 'Введите тип комнаты'
         self.fields['room_number'].label = 'Введите номер комнаты'
 
-    def clean_hotel(self):
-        hotel = self.cleaned_data['hotel']
-        if not Hotel.objects.filter(hotel_name=hotel).exists():
-            raise forms.ValidationError(f'Отель с даным названием "{hotel}" не найден в системе')
-        return self.hotel
-
-    def clean_room_type(self):
-        room_type = self.cleaned_data['room_type']
+    def clean_roomtype(self):
+        room_type = self.cleaned_data['roomtype']
         if not RoomTypes.objects.filter(hotel_type_name=room_type).exists():
             raise forms.ValidationError(f'Тип комнаты с даным названием "{room_type}" не найден в системе')
         return self.room_type
 
     class Meta:
         model = Rooms
-        fields = ['hotel', 'room_type', 'room_number']
+        fields = ['room_type', 'room_number', 'room_price']
 
 
 class DeleteForm(forms.ModelForm):
@@ -43,7 +52,7 @@ class DeleteForm(forms.ModelForm):
     def clean(self):
         hotelname = self.cleaned_data['hotelname']
 
-# фильтровать только отели самого админа
+    # фильтровать только отели самого админа
         if not Hotel.objects.filter(hotel_name=hotelname).exists():
             raise forms.ValidationError(f'Отель с даным названием "{hotelname}" не найден в системе')
         return self.cleaned_data
@@ -164,3 +173,18 @@ class AddHotelForm(forms.ModelForm):
         fields = ['hotel_name', 'hotel_long', 'hotel_lat', 'hotel_email', 'hotel_url', 'hotel_description']
 
 
+class AddRoomTypeForm(forms.ModelForm):
+
+    room_type_name = forms.CharField(max_length=200)
+    room_type_description = forms.CharField(max_length=200)
+    room_type_price = forms.DecimalField(max_digits=6, decimal_places=2)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['room_type_name'].label = 'Введите название для типа комнаты'
+        self.fields['room_type_description'].label = 'Введите описание для даного типа комнаты'
+        self.fields['room_type_price'].label = 'Введите цену даного типа комнаты'
+
+    class Meta:
+        model = RoomTypes
+        fields = ['room_type_name', 'room_type_description', 'room_type_price']

@@ -1,16 +1,16 @@
-from django.conf.urls import url
-
-from .views import LoginView, RegistrationView, HomePageView, AddRoomView, AddHotelView, RoomsView, DetailsView
+from .views import LoginView, RegistrationView, HomePageView, CreateRoom, AddHotelView, HotelDetailView, CreateAmenityView, RoomsView, AddRoomTypeView
 from django.urls import path
 
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('registration/', RegistrationView.as_view(), name='registration'),
-    path('hotels/', HomePageView.as_view(), name='homepage'),
-    path('add_room/', AddRoomView.as_view(), name='add_room'),
+    path('homepage/', HomePageView.as_view(), name='homepage'),
     path('add_hotel/', AddHotelView.as_view(), name='add_hotel'),
-    path('hotels/<str:hotel_name>/rooms/', RoomsView.as_view(), name='rooms'),
-    path('hotels/<str:hotel_name>/', DetailsView.as_view(), name='details')
-    #url(r'^hotels/(?P<hotel_name>\w{0,50})/$', DetailsView.as_view(), name='details')
+    path('rooms/<slug:slug>/', RoomsView.as_view(), name='rooms'),
+    path('add_room_type/<slug:slug>/', AddRoomTypeView.as_view(), name='add_room_type'),
+    path('createroom/<slug:slug>/', CreateRoom.as_view(), name='createroom'),
+    path('createamenity/<slug:slug>/', CreateAmenityView.as_view(), name='createamenity'),
+
+    path('<slug:slug>/', HotelDetailView.as_view(), name="hotel_detail")
 ]
