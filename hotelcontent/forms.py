@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Hotel, RoomTypes, Rooms, Amenity
+from .models import Hotel, RoomTypes, Amenity, Coefficient
+from datetime import date
 
 
 class CreateAmenityForm(forms.ModelForm):
@@ -18,26 +19,33 @@ class CreateAmenityForm(forms.ModelForm):
         fields = ['amenity_name', 'amenity_price']
 
 
-class CreateRoomForm(forms.ModelForm):
+class CreateCoefficientForm(forms.ModelForm):
 
-    room_type = forms.CharField(max_length=120)
-    room_number = forms.IntegerField()
-    room_price = forms.DecimalField(max_digits=6, decimal_places=2)
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+    coefficient = forms.DecimalField(max_digits=7, decimal_places=2)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['room_type'].label = 'Введите тип комнаты'
-        self.fields['room_number'].label = 'Введите номер комнаты'
+        self.fields['start_date'].label = 'Введите начало периода'
+        self.fields['end_date'].label = 'Введите конец периода'
+        self.fields['coefficient'].label = 'Введите коефициент'
 
-    def clean_roomtype(self):
-        room_type = self.cleaned_data['roomtype']
-        if not RoomTypes.objects.filter(hotel_type_name=room_type).exists():
-            raise forms.ValidationError(f'Тип комнаты с даным названием "{room_type}" не найден в системе')
-        return self.room_type
+    def clean_start_date(self):
+        start_date = self.cleaned_data['start_date']
+        if start_date < date.today():
+            raise forms.ValidationError(f'Начальная дата выбрана некоректно')
+        return start_date
+
+    def clean(self):
+        coefficient = self.cleaned_data['coefficient']
+        if coefficient < 0:
+            raise forms.ValidationError(f'Коефицент введен неверно')
+        return self.cleaned_data
 
     class Meta:
-        model = Rooms
-        fields = ['room_type', 'room_number', 'room_price']
+        model = Coefficient
+        fields = ['start_date', 'end_date', 'coefficient']
 
 
 class DeleteForm(forms.ModelForm):
