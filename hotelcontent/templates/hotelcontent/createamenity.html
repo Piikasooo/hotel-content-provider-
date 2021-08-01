@@ -26,6 +26,46 @@ CreateAmenity
 </nav>
 
 
+{% if amenities %}
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Amenity name</th>
+      <th scope="col">Amenity price</th>
+
+    </tr>
+  </thead>
+  <tbody>
+  {% for amenity in amenities %}
+    <tr>
+      <td>{{ amenity.amenity_name }}</td>
+      <td>{{ amenity.amenity_price }}</td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+{% endif %}
+
+
+<hr class="text-dark">
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+
+
+
 
   <form action="" method="post">
     {% csrf_token %}
