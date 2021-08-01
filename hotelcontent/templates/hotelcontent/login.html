@@ -8,12 +8,20 @@ Login
 
 {% block content %}
 
-  <form action="" method="post">
+<body class="text-center">
+
+<main class="form-signin">
+    <form action="" method="post">
     {% csrf_token %}
     {{ form|crispy }}
     <input type="submit" class="btn btn-primary" value="Sign in">
     <a href="{% url 'registration' %}" class="btn btn-outline-secondary">Registration</a>
+    <p class="mt-5 mb-3 text-muted">© 2017–2021</p>
   </form>
+</main>
+<div class="mallbery-caa" style="z-index: 2147483647 !important; text-transform: none !important; position: fixed;"></div>
+</body>
+
 
 
 {% endblock %}

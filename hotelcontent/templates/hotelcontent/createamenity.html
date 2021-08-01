@@ -19,17 +19,17 @@ CreateAmenity
     <hr>
     <hr>
 
-<nav class="navbar navbar-light bg-light">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">Create Amenity for {{ hotel.hotel_name }}</span>
-  </div>
-</nav>
-
-
 {% if amenities %}
 
 
-<table class="table">
+<div class="px-4 py-1 my-5 text-center">
+    <h1 class="display-6 fw-bold">Amenities in {{ hotel.hotel_name }}</h1>
+</div>
+
+
+ <div class="my-3 p-4 bg-body rounded shadow">
+    <div class="d-flex text-muted pt-3">
+      <table class="table">
   <thead>
     <tr>
       <th scope="col">Amenity name</th>
@@ -47,13 +47,16 @@ CreateAmenity
     {% endfor %}
   </tbody>
 </table>
+    </div>
 
+  </div>
 
 {% endif %}
 
-
-<hr class="text-dark">
-
+<div class="my-3 p-4 bg-body rounded shadow">
+<div class="px-4 py-1 my-1 text-center">
+    <h4 class="fw-bold">Create new amenity</h4>
+    <hr>
 {% if messages %}
 <ul class="messages">
     {% for message in messages %}
@@ -62,16 +65,13 @@ CreateAmenity
 </ul>
 {% endif %}
 
-
-
-
-
-
-  <form action="" method="post">
+    <form action="" method="post">
     {% csrf_token %}
     {{ form|crispy }}
     <input type="submit" class="btn btn-primary" value="Add amenity">
   </form>
+</div>
+  </div>
 
 
 {% endblock %}
