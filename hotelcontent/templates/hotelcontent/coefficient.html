@@ -19,13 +19,15 @@ CreateCoefficient
     <hr>
     <hr>
 
-<nav class="navbar navbar-light bg-light">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">Create Coefficient for {{ hotel.hotel_name }}</span>
-  </div>
-</nav>
 
 {% if coefficients %}
+
+<div class="px-4 py-1 my-5 text-center">
+    <h1 class="display-6 fw-bold">Coefficients in {{ hotel.hotel_name }}</h1>
+</div>
+
+
+<div class="my-3 p-4 bg-body rounded shadow">
   <form action="" method="post">
     {% csrf_token %}
 
@@ -52,15 +54,25 @@ CreateCoefficient
 </table>
   </form>
 
+  </div>
       {% endif %}
 
 
+<div class="my-3 p-4 bg-body rounded shadow">
+<div class="px-4 py-1 my-1 text-center">
+        <h4 class="fw-bold">Create new coefficient</h4>
+
+      <hr>
 
   <form action="" method="post">
     {% csrf_token %}
     {{ form|crispy }}
     <input type="submit" class="btn btn-primary" value="Add coefficient">
   </form>
+    </div>
+  </div>
+
+
 
 
 {% endblock %}
