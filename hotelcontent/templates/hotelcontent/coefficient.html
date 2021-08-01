@@ -26,12 +26,16 @@ CreateCoefficient
 </nav>
 
 {% if coefficients %}
+  <form action="" method="post">
+    {% csrf_token %}
+
 <table class="table">
   <thead>
     <tr>
       <th scope="col">Start date</th>
       <th scope="col">End date</th>
       <th scope="col">Coefficient</th>
+        <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -40,12 +44,15 @@ CreateCoefficient
       <td>{{ coefficient.start_date }}</td>
       <td>{{ coefficient.end_date }}</td>
       <td>{{ coefficient.coefficient }}</td>
-        <a href="{% url 'login' %}" class="btn btn-outline-secondary">Delete</a>
+        <td><button name="id" type="submit" class="btn btn-danger" value="{{ coefficient.id }}">Delete</button></td>
+
     </tr>
     {% endfor %}
   </tbody>
 </table>
-{% endif %}
+  </form>
+
+      {% endif %}
 
 
 
