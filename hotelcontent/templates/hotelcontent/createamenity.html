@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+CreateAmenity
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+                 CreateAmenity User - {{ user.username }}
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+</nav>
+
+    <hr>
+    <hr>
+    <hr>
+
+<nav class="navbar navbar-light bg-light">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">Create Amenity for {{ hotel.hotel_name }}</span>
+  </div>
+</nav>
+
+
+
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="Add amenity">
+  </form>
+
+
+{% endblock %}
