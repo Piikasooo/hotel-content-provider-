@@ -1,12 +1,11 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
-from .forms import LoginForm, RegistrationForm, DeleteForm, AddHotelForm, CreateAmenityForm, CreateRoomForm
+from .forms import LoginForm, RegistrationForm, DeleteForm, CreateCoefficientForm, AddHotelForm, CreateAmenityForm
 from django.contrib.auth import authenticate, login
-from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity
+from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, Coefficient
 from django.contrib.auth.models import User
-
-from django.views.generic import DetailView
+from django.contrib import messages
 
 
 class LoginView(View):
@@ -32,7 +31,7 @@ class LoginView(View):
             if user:
                 login(request, user)
                 request.session['data'] = user.username
-                return HttpResponseRedirect('/enter/homepage/')
+                return HttpResponseRedirect('/homepage/')
         return render(request, 'login.html', {'form': form})
 
 
@@ -61,21 +60,14 @@ class RegistrationView(View):
             )
             user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             login(request, user)
-            return HttpResponseRedirect('/enter/login/')
+            return HttpResponseRedirect('/login/')
         context = {'form': form}
         return render(request, 'registration.html', context)
-
-
-###########################################################
-'''главная страница, где отображаются уже 
-зарегистрированные им отели со следующим описанием - (название отеля, координаты отеля) 
-и две кнопки возле каждого отеля Delete, Details'''
 
 
 class HomePageView(View):
 
     def get(self, request):
-
         form = DeleteForm(request.POST or None)
 
         user = request.session['data']
@@ -86,30 +78,12 @@ class HomePageView(View):
         return render(request, "homepage.html", context)
 
     def post(self, request, *args, **kwargs):
-        form = DeleteForm(request.POST or None)
-        if form.is_valid():
-            user = request.session['data']
-            user = User.objects.get(username=user)
-            hotelname = form.cleaned_data['hotelname']
-            hotels = Hotel.objects.filter(admin=user)
-            for hotel in hotels:
-                if hotel.hotel_name == hotelname:
-                    hotel.delete()
-                    hotels = Hotel.objects.filter(admin=user)
-                    context = {'user': user, 'hotels': hotels, 'form': form}
-                    return render(request, "homepage.html", context)
-        user = request.session['data']
-        user = User.objects.get(username=user)
-        hotels = Hotel.objects.filter(admin=user)
-        context = {'user': user, 'hotels': hotels, 'form': form}
-        return render(request, "homepage.html", context)
+        pass
 
 
 class CreateRoom(View):
 
     def get(self, request, slug):
-
-        form = CreateRoomForm(request.POST or None)
 
         user = request.session['data']
         user = User.objects.get(username=user)
@@ -118,25 +92,51 @@ class CreateRoom(View):
         amenities = Amenity.objects.filter(hotel=hotel)
         room_types = RoomTypes.objects.filter(hotel=hotel)
 
-        context = {'hotel': hotel, 'form': form, 'user': user, 'amenities': amenities, 'room_types': room_types}
+        context = {'hotel': hotel, 'user': user, 'amenities': amenities, 'room_types': room_types}
         return render(request, "createroom.html", context)
 
     def post(self, request, slug):
 
-        #сделать проверку на заполнение всех полей (проверка dropdown)
         user = request.session['data']
         user = User.objects.get(username=user)
 
         amenities = request.POST.getlist('amenity')
         hotel = Hotel.objects.get(admin=user, url=slug)
 
+        if len(amenities) == 0:
+            amenities = Amenity.objects.filter(hotel=hotel)
+            room_types = RoomTypes.objects.filter(hotel=hotel)
+            context = {'hotel': hotel, 'user': user, 'amenities': amenities, 'room_types': room_types}
+            alert = 'Select amenity'
+            messages.info(request, alert)
+            return render(request, "createroom.html", context)
+
         for amenity in amenities:
             am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)
             total =+ am.amenity_price
 
         room_number = request.POST.get('room_number')
+        allrooms = Rooms.objects.filter(hotel=hotel)
+
+        for roomhotel in allrooms:
+            if roomhotel.room_number == int(room_number):
+                amenities = Amenity.objects.filter(hotel=hotel)
+                room_types = RoomTypes.objects.filter(hotel=hotel)
+                context = {'hotel': hotel, 'user': user, 'amenities': amenities, 'room_types': room_types}
+                alert = 'This number room exist!'
+                messages.info(request, alert)
+                return render(request, "createroom.html", context)
 
         room_type = request.POST.get('dropdown')
+
+        if str(room_type) == 'Select type room':
+            amenities = Amenity.objects.filter(hotel=hotel)
+            room_types = RoomTypes.objects.filter(hotel=hotel)
+            context = {'hotel': hotel, 'user': user, 'amenities': amenities, 'room_types': room_types}
+            alert = 'Select type room'
+            messages.info(request, alert)
+            return render(request, "createroom.html", context)
+
         room_type = RoomTypes.objects.get(room_type_name=room_type)
 
         room_rate_price = room_type.room_type_price + total
@@ -148,7 +148,9 @@ class CreateRoom(View):
             rate_amenity = RateAmenity(room=room, amenity=am)
             rate_amenity.save()
 
-        return HttpResponseRedirect('/enter/homepage/')
+        alert = 'Successfully created new room'
+        messages.info(request, alert)
+        return HttpResponseRedirect('/homepage/')
 
 
 class AddHotelView(View):
@@ -180,21 +182,25 @@ class AddHotelView(View):
             new_hotel.url = url
             new_hotel.save()
 
-            return HttpResponseRedirect('/enter/homepage/')
+            return HttpResponseRedirect('/homepage/')
         context = {'form': form}
         return render(request, 'add_hotel.html', context)
 
 
 class HotelDetailView(View):
-    #model = Hotel
-    #slug_field = "url"
 
     def get(self, request, slug):
         hotel = Hotel.objects.get(url=slug)
-        #request.session['hotel_name'] = hotel.hotel_name
         amenities = Amenity.objects.filter(hotel=hotel)
         context = {"hotel": hotel, "amenities": amenities}
         return render(request, "hotel_detail.html", context)
+
+    def post(self, request, slug):
+        hotel = Hotel.objects.get(url=slug)
+        hotel.delete()
+        alert = 'Hotel is deleted'
+        messages.info(request, alert)
+        return HttpResponseRedirect('/homepage/')
 
 
 class CreateAmenityView(View):
@@ -206,12 +212,14 @@ class CreateAmenityView(View):
         user = request.session['data']
         user = User.objects.get(username=user)
 
-        hotel = Hotel.objects.get(url=slug)
+        hotel = Hotel.objects.get(url=slug, admin=user)
 
-        context = {'user': user, 'hotel': hotel, 'form': form}
+        amenities = Amenity.objects.filter(hotel=hotel)
+        context = {'user': user, 'hotel': hotel, 'form': form, 'amenities': amenities}
         return render(request, "createamenity.html", context)
 
     def post(self, request, slug):
+
         form = CreateAmenityForm(request.POST or None)
         user = request.session['data']
 
@@ -222,16 +230,58 @@ class CreateAmenityView(View):
             hotel = Hotel.objects.get(url=slug, admin=user)
 
             amenity = form.save(commit=False)
-            amenity.amenity_name = form.cleaned_data['amenity_name']
+
+            amenity_name = form.cleaned_data['amenity_name']
+
+            if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
+                context = {'user': user, 'hotel': hotel, 'form': form}
+                alert = 'This amenity name exist'
+                messages.info(request, alert)
+                return render(request, "createamenity.html", context)
+
+            amenity.amenity_name = amenity_name
             amenity.amenity_price = form.cleaned_data['amenity_price']
             amenity.hotel = hotel
             amenity.save()
 
-            # succes new amenity
-            return HttpResponseRedirect('/enter/homepage/')
+            alert = 'Successfully created new amenity'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/homepage/')
         hotel = Hotel.objects.get(url=slug)
         context = {'user': user, 'hotel': hotel, 'form': form}
         return render(request, "createamenity.html", context)
 
 
+class CreateCoefficientView(View):
 
+    def get(self, request, slug):
+        form = CreateCoefficientForm(request.POST or None)
+        user = request.session['data']
+        user = User.objects.get(username=user)
+
+        hotel = Hotel.objects.get(url=slug, admin=user)
+
+        coefficients = Coefficient.objects.filter(hotel=hotel)
+        context = {'user': user, 'hotel': hotel, 'form': form, 'coefficients': coefficients}
+        return render(request, "coefficient.html", context)
+
+    def post(self, request, slug):
+        form = CreateCoefficientForm(request.POST or None)
+        user = request.session['data']
+        user = User.objects.get(username=user)
+
+        hotel = Hotel.objects.get(url=slug, admin=user)
+
+        if form.is_valid():
+            coefficient = form.save(commit=False)
+            coefficient.start_date = form.cleaned_data['start_date']
+            coefficient.end_date = form.cleaned_data['end_date']
+            coefficient.coefficient = form.cleaned_data['coefficient']
+            coefficient.hotel = hotel
+            coefficient.save()
+
+            alert = 'Successfully created new coefficient'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/homepage/')
+        context = {'user': user, 'hotel': hotel, 'form': form}
+        return render(request, "coefficient.html", context)
