@@ -27,15 +27,13 @@ CreateAmenity
 
 
 {% if amenities %}
- <form action="" method="post">
-    {% csrf_token %}
+
 
 <table class="table">
   <thead>
     <tr>
       <th scope="col">Amenity name</th>
       <th scope="col">Amenity price</th>
-        <th scope="col">Action</th>
 
     </tr>
   </thead>
@@ -44,13 +42,12 @@ CreateAmenity
     <tr>
       <td>{{ amenity.amenity_name }}</td>
       <td>{{ amenity.amenity_price }}</td>
-        <td><button name="id" type="submit" class="btn btn-danger" value="{{ amenity.id }}">Delete</button></td>
 
     </tr>
     {% endfor %}
   </tbody>
 </table>
-           </form>
+
 
 {% endif %}
 

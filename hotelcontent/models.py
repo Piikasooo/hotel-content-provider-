@@ -52,8 +52,6 @@ class Amenity(models.Model):
 
     hotel = models.ForeignKey(Hotel, verbose_name="Отель", on_delete=models.CASCADE, default=0)
 
-    vision = models.BooleanField(default=True)
-
     def __str__(self):
         return '{}/{}'.format(self.amenity_name, self.amenity_price)
 
