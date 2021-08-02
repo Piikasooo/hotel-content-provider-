@@ -9,45 +9,70 @@ CreateRoomType
 {% block content %}
 
 <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
-                 CreateRoomType User - {{ user.username }}
-        </a>
+        <form class="container-fluid justify-content-start">
+            <a class="navbar-brand" href=""> Room Types of <em>{{ hotel.hotel_name }}</em></a>
+        </form>
+
+
+        <form class="container-fluid justify-content-center">
+
+        </form>
+
+        <form class="container-fluid justify-content-end">
+            <span class="navbar-text"> User: {{ user.username }}    </span>
+        </form>
+
         <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
-</nav>
+
+    </nav>
 
 <hr>
 <hr>
 <hr>
 
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
-    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-      <span class="fs-4">Список типов комнат</span>
-    </a>
-    <hr>
-    <ul>
-        {% for roomtype in room_type %}
-      <li>
-          {{ roomtype.room_type_name }} - {{ roomtype.room_type_price }}.
-          Описание: {{ roomtype.room_type_description }}
-      </li>
-        {% endfor %}
-    </ul>
-  </div>
-
-<hr>
-
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if room_type %}
 <nav class="navbar navbar-light bg-light">
   <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">Create Room Type for {{ hotel.hotel_name }}</span>
+    <span class="navbar-brand mb-0 h1"> Available Room Types </span>
   </div>
 </nav>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Room Type name</th>
+      <th scope="col">Room Type price</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for roomtype in room_type %}
+    <tr>
+      <td>{{ roomtype.room_type_name }}</td>
+      <td>{{ roomtype.room_type_price }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+    </div>
 
+    <div class="col">
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">Add New Room Type </span>
+            </div>
+        </nav>
 
-  <form action="" method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="submit" class="btn btn-primary" value="Add Room Type">
-  </form>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-success" value="Add Room Type">
+        </form>
+    </div>
+  </div>
+</div>
 
-
+<hr>
 {% endblock %}

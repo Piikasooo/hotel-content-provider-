@@ -61,6 +61,7 @@ class Rooms(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     room_type = models.ForeignKey(RoomTypes, on_delete=models.CASCADE)
     room_number = models.IntegerField()
+    room_rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00)
 
     ####окончательная цена за комнату: тип комната + amenities
     room_rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00)
