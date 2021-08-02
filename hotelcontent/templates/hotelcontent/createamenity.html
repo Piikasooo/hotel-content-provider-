@@ -6,31 +6,18 @@ CreateAmenity
 
 {% load crispy_forms_tags %}
 
+{% block page_name %}
+ Amenities of <em>{{ hotel.hotel_name }}</em>
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+    {% endblock %}
+
 {% block content %}
-
-<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <form class="container-fluid justify-content-start">
-            <a class="navbar-brand" href=""> Amenities of <em>{{ hotel.hotel_name }}</em></a>
-        </form>
-
-
-        <form class="container-fluid justify-content-center">
-
-        </form>
-
-        <form class="container-fluid justify-content-end">
-            <span class="navbar-text"> User: {{ user.username }}    </span>
-        </form>
-
-        <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
-
-    </nav>
-
-    <hr>
-    <hr>
-    <hr>
-
-
 
 <div class="container">
   <div class="row">
@@ -63,13 +50,16 @@ CreateAmenity
     <div class="col">
         <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
+
                 <span class="navbar-brand mb-0 h1"> Add New Amenity </span>
             </div>
         </nav>
+
         <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}
             <input type="submit" class="btn btn-success me-2" value="Add Amenity">
+
         </form>
     </div>
   </div>
@@ -79,6 +69,7 @@ CreateAmenity
 
 <hr class="text-dark">
 
+
 {% if messages %}
 <ul class="messages">
     {% for message in messages %}
@@ -86,7 +77,6 @@ CreateAmenity
     {% endfor %}
 </ul>
 {% endif %}
-
 
 
 
