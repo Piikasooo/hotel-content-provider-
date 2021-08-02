@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Hotel, RoomTypes, Rooms, Amenity
+from .models import Hotel, RoomTypes, Amenity, Coefficient, Rooms
+from datetime import date
 
 
 class CreateAmenityForm(forms.ModelForm):
@@ -16,6 +17,35 @@ class CreateAmenityForm(forms.ModelForm):
     class Meta:
         model = Amenity
         fields = ['amenity_name', 'amenity_price']
+
+
+class CreateCoefficientForm(forms.ModelForm):
+
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+    coefficient = forms.DecimalField(max_digits=7, decimal_places=2)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['start_date'].label = 'Введите начало периода'
+        self.fields['end_date'].label = 'Введите конец периода'
+        self.fields['coefficient'].label = 'Введите коефициент'
+
+    def clean_start_date(self):
+        start_date = self.cleaned_data['start_date']
+        if start_date < date.today():
+            raise forms.ValidationError(f'Начальная дата выбрана некоректно')
+        return start_date
+
+    def clean(self):
+        coefficient = self.cleaned_data['coefficient']
+        if coefficient < 0:
+            raise forms.ValidationError(f'Коефицент введен неверно')
+        return self.cleaned_data
+
+    class Meta:
+        model = Coefficient
+        fields = ['start_date', 'end_date', 'coefficient']
 
 
 class CreateRoomForm(forms.ModelForm):
