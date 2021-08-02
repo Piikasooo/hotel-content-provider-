@@ -6,34 +6,18 @@ Create New Room
 
 {% load crispy_forms_tags %}
 
-{% block content %}
+{% block page_name %}
+<em>{{ hotel.hotel_name }}</em> Hotel Create New Room
+{% endblock %}
 
-
-<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-
-      <form class="container-fluid justify-content-start">
-        <a class="navbar-brand" href=""> <em>{{ hotel.hotel_name }}</em> Hotel Create New Room </a>
-    </form>
-
-        <form class="container-fluid justify-content-center">
-
-        </form>
-
+{% block end %}
     <form class="container-fluid justify-content-end">
-        <form method="post">
-        {% csrf_token %}
-            <span class="navbar-text"> User: {{ user.username }} </span>
-        </form>
-
+        <span class="navbar-text"> User: {{ user.username }}    </span>
     </form>
-
     <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
 
-
-</nav>
-
-    <hr>
-
+{% block content %}
 
     {% if messages %}
 <ul class="messages">
@@ -43,12 +27,8 @@ Create New Room
 </ul>
 {% endif %}
 
-    <hr color="blue">
-    <hr color="red">
-
 <form method="post" class="ckeck">
   {% csrf_token %}
-
 
     <div class="mb-3">
         <label for="formGroupExampleInput" class="form-label"><h5>Введите номер комнаты</h5></label>
