@@ -7,10 +7,22 @@ RoomsPage
 {% block content %}
 
     <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
-                 Rooms List User - {{ user.username }}
-        </a>
-            <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+        <form class="container-fluid justify-content-start">
+            <a class="navbar-brand" href=""> Rooms <em>{{ hotel.hotel_name }}</em></a>
+        </form>
+
+
+        <form class="container-fluid justify-content-center">
+                        <a href="{% url 'add_room' hotel.url %}" class="btn btn-outline-light me-2">Add New Room </a>
+
+        </form>
+
+        <form class="container-fluid justify-content-end">
+            <span class="navbar-text"> User: {{ user.username }}    </span>
+        </form>
+
+        <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+
     </nav>
 
     <hr>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-CreateAmenity
+CreateCoefficient
 {% endblock %}
 
 {% load crispy_forms_tags %}
@@ -10,7 +10,7 @@ CreateAmenity
 
 <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
         <form class="container-fluid justify-content-start">
-            <a class="navbar-brand" href=""> Amenities of <em>{{ hotel.hotel_name }}</em></a>
+            <a class="navbar-brand" href=""> Coefficients of <em>{{ hotel.hotel_name }}</em></a>
         </form>
 
 
@@ -31,63 +31,61 @@ CreateAmenity
     <hr>
 
 
-
 <div class="container">
   <div class="row">
     <div class="col">
-      {% if amenities %}
+
+      {% if coefficients %}
+  <form action="" method="post">
+    {% csrf_token %}
 <nav class="navbar navbar-light bg-light">
   <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1"> Available Amenities</span>
+    <span class="navbar-brand mb-0 h1"> Available Coefficients </span>
   </div>
 </nav>
-<table class="table table-striped">
+<table class="table">
   <thead>
     <tr>
-      <th scope="col">Amenity name</th>
-      <th scope="col">Amenity price</th>
+      <th scope="col">Start date</th>
+      <th scope="col">End date</th>
+      <th scope="col">Coefficient</th>
+        <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody>
-  {% for amenity in amenities %}
+  {% for coefficient in coefficients %}
     <tr>
-      <td>{{ amenity.amenity_name }}</td>
-      <td>{{ amenity.amenity_price }}</td>
+      <td>{{ coefficient.start_date }}</td>
+      <td>{{ coefficient.end_date }}</td>
+      <td>{{ coefficient.coefficient }}</td>
+        <td><button name="id" type="submit" class="btn btn-danger" value="{{ coefficient.id }}">Delete</button></td>
+
     </tr>
     {% endfor %}
   </tbody>
 </table>
-{% endif %}
+  </form>
+
+      {% endif %}
     </div>
 
     <div class="col">
         <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
-                <span class="navbar-brand mb-0 h1"> Add New Amenity </span>
+                <span class="navbar-brand mb-0 h1">Add New Coefficient </span>
             </div>
         </nav>
+
         <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <input type="submit" class="btn btn-success me-2" value="Add Amenity">
+            <input type="submit" class="btn btn-success" value="Add Coefficient">
         </form>
     </div>
   </div>
 </div>
 
-
-
-<hr class="text-dark">
-
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li><h3 class="text-danger">{{ message }}</h3></li>
-    {% endfor %}
-</ul>
-{% endif %}
-
-
+<hr>
 
 
 {% endblock %}
