@@ -6,30 +6,22 @@ HomePage
 
 {% load crispy_forms_tags %}
 
+{% block page_name %}
+Home Page
+{% endblock %}
 
-{% block content %}
+{% block buttons %}
+    <a href="{% url 'add_hotel' %}" class="btn btn-outline-light me-2">Add New Hotel</a>
+{% endblock %}
 
-
-
-<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-    <form class="container-fluid justify-content-start">
-        <a class="navbar-brand" href=""> Home Page  </a>
-    </form>
-
-        <form class="container-fluid justify-content-center">
-            <a href="{% url 'add_hotel' %}" class="btn btn-outline-light me-2">Add New Hotel</a>
-        </form>
+{% block end %}
     <form class="container-fluid justify-content-end">
         <span class="navbar-text"> User: {{ user.username }}    </span>
     </form>
-
     <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
-</nav>
+    {% endblock %}
 
-<hr>
-<hr>
-<hr>
-
+{% block content %}
 
 {% if messages %}
 <ul class="messages">
@@ -39,9 +31,8 @@ HomePage
 </ul>
 {% endif %}
 
-
 <div class="my-3 p-3 bg-white rounded box-shadow">
-    <h3 class="border-bottom border-gray pb-2 mb-0"> The hotels list </h3>
+    <h3 class="border-bottom border-gray pb-2 mb-0"> The Hotels List </h3>
 
     <hr>
 
@@ -53,7 +44,6 @@ HomePage
         <div class="card mb-3" style="max-width: 1000px;">
             <div class="row g-0">
                 <div class="col-md-4">
-                    <img src="..." class="img-fluid rounded-start" alt="..." >
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">

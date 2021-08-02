@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+RoomsPage
+{% endblock %}
+
+{% block page_name %}
+Rooms <em>{{ hotel.hotel_name }}</em>
+{% endblock %}
+
+{% block buttons %}
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
+
+{% block content %}
+
+<h5>{{ room }}</h5>
+{% endblock %}
