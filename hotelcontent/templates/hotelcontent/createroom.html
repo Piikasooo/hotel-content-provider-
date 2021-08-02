@@ -9,28 +9,46 @@ Create New Room
 {% block content %}
 
 
-    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
-                 CreateNewRoom User - {{ user.username }} Hotel - {{ hotel.hotel_name }}
-        </a>
-            <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
-    </nav>
+<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
+
+      <form class="container-fluid justify-content-start">
+        <a class="navbar-brand" href=""> <em>{{ hotel.hotel_name }}</em> Hotel Create New Room </a>
+    </form>
+
+        <form class="container-fluid justify-content-center">
+
+        </form>
+
+    <form class="container-fluid justify-content-end">
+        <form method="post">
+        {% csrf_token %}
+            <span class="navbar-text"> User: {{ user.username }} </span>
+        </form>
+
+    </form>
+
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+
+
+</nav>
 
     <hr>
-    <hr>
-    <hr>
 
 
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
 
     <hr color="blue">
     <hr color="red">
 
-
-
-
-
 <form method="post" class="ckeck">
   {% csrf_token %}
+
 
     <div class="mb-3">
         <label for="formGroupExampleInput" class="form-label"><h5>Введите номер комнаты</h5></label>
@@ -52,7 +70,7 @@ Create New Room
     <h5>Доступные типы комнат:</h5>
 
     <select class="form-select" aria-label="Default select example" name="dropdown">
-  <option selected>Select type's room</option>
+  <option selected>Select type room</option>
 
             {% for room_type in room_types %}
 
@@ -70,7 +88,7 @@ Create New Room
   <input type="text" class="form-control" placeholder="Price" aria-label="Username" aria-describedby="addon-wrapping" readonly>
 </div>
     <hr>
-    <button type="submit" class="btn btn-secondary">Create new room</button>
+    <button type="submit" class="btn btn-success me-2">Add Room</button>
 
 </form>
 

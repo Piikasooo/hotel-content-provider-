@@ -3,6 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+Hotel_content_provider/__pycache__/urls.cpython-39.pyc
+hotelcontent/__pycache__/forms.cpython-39.pyc
+hotelcontent/__pycache__/models.cpython-39.pyc
+hotelcontent/__pycache__/urls.cpython-39.pyc
+hotelcontent/__pycache__/views.cpython-39.pyc
+
+
+
 # C extensions
 *.so
 

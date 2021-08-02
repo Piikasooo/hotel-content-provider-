@@ -8,12 +8,22 @@
 
 {% block content %}
 
-  <form action="" method="post">
+<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+                 Welcome
+        </a>
+</nav>
+
+<hr>
+<hr>
+<hr>
+
+<form action="" method="post">
     {% csrf_token %}
     {{ form|crispy }}
     <input type="submit" class="btn btn-primary" value="Sign in">
     <a href="{% url 'registration' %}" class="btn btn-outline-secondary">Registration</a>
-  </form>
+</form>
 
 
 {% endblock %}
