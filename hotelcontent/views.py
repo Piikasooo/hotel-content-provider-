@@ -244,7 +244,8 @@ class CreateAmenityView(View):
             amenity_name = form.cleaned_data['amenity_name']
 
             if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
-                context = {'user': user, 'hotel': hotel, 'form': form}
+                amenities = Amenity.objects.filter(hotel=hotel)
+                context = {'user': user, 'hotel': hotel, 'form': form, 'amenities': amenities}
                 alert = 'This amenity name exist'
                 messages.info(request, alert)
                 return render(request, "createamenity.html", context)
@@ -256,7 +257,7 @@ class CreateAmenityView(View):
 
             alert = 'Successfully created new amenity'
             messages.info(request, alert)
-            return HttpResponseRedirect('/homepage/')
+            return HttpResponseRedirect('/amenity/' + hotel.url + '/')
         hotel = Hotel.objects.get(url=slug)
         context = {'user': user, 'hotel': hotel, 'form': form}
         return render(request, "createamenity.html", context)
@@ -292,7 +293,7 @@ class CreateCoefficientView(View):
 
             alert = 'Successfully created new coefficient'
             messages.info(request, alert)
-            return HttpResponseRedirect('/homepage/')
+            return HttpResponseRedirect('/coefficient/' + hotel.url + '/')
         context = {'user': user, 'hotel': hotel, 'form': form}
         return render(request, "coefficient.html", context)
 
@@ -346,8 +347,20 @@ class AddRoomTypeView(View):
             room_type.hotel = hotel
             room_type.save()
 
-            # succes new amenity
-            return HttpResponseRedirect('/homepage/')
+            return HttpResponseRedirect('/add_room_type/' + hotel.url + '/')
         hotel = Hotel.objects.get(url=slug)
-        context = {'user': user, 'hotel': hotel, 'form': form}
+        room_type = RoomTypes.objects.filter(hotel=hotel)
+        context = {'user': user, 'hotel': hotel, 'form': form, 'room_type': room_type}
         return render(request, "add_room_type.html", context)
+
+
+class RoomDetailView(View):
+
+    def get(self, request, slug, room_number):
+        hotel = Hotel.objects.get(url=slug)
+        room = Rooms.objects.get(hotel=hotel, room_number=room_number)
+        context = {
+            "hotel": hotel,
+            "room": room
+        }
+        return render(request, "room_details.html", context)

@@ -6,17 +6,11 @@
     Авторизация
 {% endblock %}
 
+{% block page_name %}
+Welcome
+{% endblock %}
+
 {% block content %}
-
-<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
-                 Welcome
-        </a>
-</nav>
-
-<hr>
-<hr>
-<hr>
 
 <form action="" method="post">
     {% csrf_token %}
