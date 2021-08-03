@@ -1,16 +1,19 @@
 from rest_framework import serializers
+from hotelcontent.models import Hotel, Rooms
 
 
-class HotelsSerializer(serializers.Serializer):
-    hotel_name = serializers.CharField(max_length=200)
-    hotel_email = serializers.EmailField(max_length=254)
-    hotel_url = serializers.URLField()
+class HotelsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hotel
+        fields = ['hotel_name', 'hotel_email', 'hotel_url']
 
 
-class RoomsSerializer(serializers.Serializer):
+class RoomSerializer(serializers.ModelSerializer):
     hotel = serializers.CharField()
-    room_number = serializers.IntegerField()
-    room_rate_price = serializers.DecimalField(max_digits=7, decimal_places=2)
     room_type = serializers.CharField()
+    amenities = serializers.StringRelatedField(many=True)
 
+    class Meta:
+        model = Rooms
+        fields = ['hotel', 'room_number', 'room_type', 'room_rate_price', 'amenities']
 
