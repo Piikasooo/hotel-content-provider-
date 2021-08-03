@@ -28,25 +28,31 @@ HotelDetail
 
 {% block content %}
 
-<div class="card text-center" style="width: 50rem;">
-    <div class="card-bg-body rounded shadow text-center">
-        <div class="text-center">
-            <h2 class="card-title">{{ hotel.hotel_name }}</h2>
-        </div>
-        <div class="row align-items-start">
+
+<div class="p-3  ">
+
+
+<div class="my-3 p-4 bg-body rounded shadow">
+
+    <div class="px-4 py-1 my-1 text-center">
+
+        <h4 class="fw-bold">{{ hotel.hotel_name }}</h4>
+        <hr>
+ <div class="row align-items-start">
     <div class="col">
       <p class="card-text">{{ hotel.hotel_description }}</p>
     </div>
     <div class="col">
         <p class="card-text">Email: {{ hotel.hotel_email }}</p>
-        <p class="card-text">Site: {{ hotel.hotel_url }}</p>
+        <p class="card-text">Site: <a href="{{hotel.hotel_url}}">{{ hotel.hotel_url }}</a></p>
         <p class="card-text">Long: {{ hotel.hotel_long }}, Lat: {{ hotel.hotel_lat }}</p>
     </div>
         </div>
 
-
-
     </div>
 </div>
+
+</div>
+
 
 {% endblock %}

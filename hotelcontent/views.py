@@ -111,6 +111,7 @@ class CreateRoom(View):
         user = User.objects.get(username=user)
 
         amenities = request.POST.getlist('amenity')
+        print(amenities)
         hotel = Hotel.objects.get(admin=user, url=slug)
 
         if len(amenities) == 0:
@@ -121,9 +122,10 @@ class CreateRoom(View):
             messages.info(request, alert)
             return render(request, "createroom.html", context)
 
+        total = 0
         for amenity in amenities:
             am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)
-            total =+ am.amenity_price
+            total = total + am.amenity_price
 
         room_number = request.POST.get('room_number')
         allrooms = Rooms.objects.filter(hotel=hotel)
@@ -359,8 +361,12 @@ class RoomDetailView(View):
     def get(self, request, slug, room_number):
         hotel = Hotel.objects.get(url=slug)
         room = Rooms.objects.get(hotel=hotel, room_number=room_number)
+        room_type = RoomTypes.objects.get(id=room.room_type.id)
+        amenities = RateAmenity.objects.filter(room=room)
         context = {
             "hotel": hotel,
-            "room": room
+            "room": room,
+            "room_type": room_type,
+            "amenities": amenities,
         }
         return render(request, "room_details.html", context)
