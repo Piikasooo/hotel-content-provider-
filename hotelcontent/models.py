@@ -88,6 +88,7 @@ class Bookings(models.Model):
     agent_reservation = models.ForeignKey(AgentReservation, on_delete=models.CASCADE)
     booking_status = models.ForeignKey(BookingStatus, on_delete=models.CASCADE)
     hotels = models.ManyToManyField(Hotel)
+    # room
     checkin = models.DateField()
     checkout = models.DateField(blank=True, null=True)
     rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=0)
