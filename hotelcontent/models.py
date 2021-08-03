@@ -63,7 +63,7 @@ class Rooms(models.Model):
     room_number = models.IntegerField()
     room_rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00)
 
-    ####окончательная цена за комнату: тип комната + amenities
+    # окончательная цена за комнату: тип комната + amenities
     room_rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00)
 
     def __str__(self):
