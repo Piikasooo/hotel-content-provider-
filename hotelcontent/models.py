@@ -88,6 +88,7 @@ class Bookings(models.Model):
     checkin = models.DateField()
     checkout = models.DateField(blank=True, null=True)
     rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    #room = FK
 
     def __str__(self):
         return '{}/{}'.format(self.agent_reservation, self.hotels, self.checkin, self.checkout, self.rate_price)
@@ -104,10 +105,10 @@ class Coefficient(models.Model):
 
 
 class RateAmenity(models.Model):
-    room = models.ForeignKey(Rooms, verbose_name="Комната", on_delete=models.CASCADE, default=0)
+    room = models.ForeignKey(Rooms, related_name='amenities', verbose_name="Комната", on_delete=models.CASCADE, default=0)
     amenity = models.ForeignKey(Amenity, verbose_name="Amenity", on_delete=models.CASCADE, default=0)
 
     def __str__(self):
-        return '{}/{}'.format(self.room, self.amenity)
+        return '{}'.format(self.amenity)
 
 
