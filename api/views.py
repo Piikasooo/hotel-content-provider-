@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from hotelcontent.models import Hotel, Rooms
+from hotelcontent.models import Hotel, Rooms, RateAmenity
 from .serializers import HotelsSerializer, RoomsSerializer
 
 

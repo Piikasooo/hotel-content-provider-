@@ -8,6 +8,9 @@ class HotelsSerializer(serializers.Serializer):
 
 
 class RoomsSerializer(serializers.Serializer):
+    hotel = serializers.CharField()
     room_number = serializers.IntegerField()
     room_rate_price = serializers.DecimalField(max_digits=7, decimal_places=2)
+    room_type = serializers.CharField()
+
 
