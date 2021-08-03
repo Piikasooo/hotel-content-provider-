@@ -139,7 +139,7 @@ class CreateRoom(View):
             messages.info(request, alert)
             return render(request, "createroom.html", context)
 
-        room_type = RoomTypes.objects.get(room_type_name=room_type)
+        room_type = RoomTypes.objects.get(room_type_name=room_type, hotel=hotel)
 
         room_rate_price = room_type.room_type_price + total
         room = Rooms(room_number=room_number, room_type=room_type, hotel=hotel, room_rate_price=room_rate_price)
