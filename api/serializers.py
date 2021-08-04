@@ -17,3 +17,8 @@ class RoomSerializer(serializers.ModelSerializer):
         model = Rooms
         fields = ['hotel', 'room_number', 'room_type', 'room_rate_price', 'amenities']
 
+
+class RoomFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rooms
+        fields = []
