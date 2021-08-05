@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient
-from .serializers import HotelsSerializer, RoomSerializer
+from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation
+from .serializers import HotelsSerializer, RoomSerializer, BookingSerializer
 import datetime
 
 
@@ -100,3 +100,11 @@ def final_price(libre_rooms, start_date, end_date):
 
     return libre_rooms
 
+
+class MyBookingsView(APIView):
+
+    def get(self, request, slug):
+        agent = AgentReservation.objects.filter(agent_details=slug).first()
+        bookings = Bookings.objects.filter(agent_reservation=agent)
+        serializer = BookingSerializer(bookings, many=True)
+        return Response({"Bookings": serializer.data})
