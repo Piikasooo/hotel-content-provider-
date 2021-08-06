@@ -13,7 +13,7 @@ class Admin(models.Model):
     address = models.CharField(max_length=255, verbose_name='Адрес', null=True, blank=True)
 
     def __str__(self):
-        return self.user
+        return '{}'.format(self.user)
 
 
 class Hotel(models.Model):
