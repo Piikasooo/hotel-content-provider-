@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from hotelcontent.models import Hotel, Rooms
+from hotelcontent.models import Hotel, Rooms, Bookings
 
 
 class HotelsSerializer(serializers.ModelSerializer):
@@ -19,6 +19,19 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class RoomFilterSerializer(serializers.ModelSerializer):
+    hotel = serializers.CharField()
+    room_type = serializers.CharField()
+    amenities = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Rooms
-        fields = []
+        fields = ['hotel', 'room_number', 'room_type', 'amenities', 'room_price']
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    hotels = serializers.CharField()
+    room = serializers.CharField()
+
+    class Meta:
+        model = Bookings
+        fields = ['hotels', 'room', 'checkin', 'checkout', 'rate_price' ]

@@ -40,7 +40,7 @@ class CreateCoefficientForm(forms.ModelForm):
     def clean_end_date(self):
         start_date = self.cleaned_data['start_date']
         end_date = self.cleaned_data['end_date']
-        if start_date < end_date:
+        if start_date > end_date:
             raise forms.ValidationError(f'Конечная дата выбрана некоректно')
         return start_date
 
