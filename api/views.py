@@ -1,9 +1,11 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient
-from .serializers import HotelsSerializer, RoomSerializer
-import datetime
+from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation, User
+from .serializers import HotelsSerializer, RoomSerializer, RoomFilterSerializer, BookingSerializer
+from .functions import str_to_date, final_price_list, final_price
+from django.db.models import Q
+from rest_framework import permissions
 
 
 class HotelsView(APIView):
@@ -31,6 +33,43 @@ class RoomsView(APIView):
         return Response({"rooms": serializer.data})
 
 
+class BookingView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response("Create new Booking!")
+
+    def post(self, request):
+
+        agent_name = request.user.username
+        agent = User.objects.get(username=agent_name)
+        agent1 = AgentReservation.objects.get(agent=agent)
+
+        start_date, end_date = str_to_date(request)
+        room_num = int(request.data.get("room_number"))
+        hotel = Hotel.objects.get(hotel_name=request.data.get("hotel"))
+        room = Rooms.objects.get(room_number=room_num, hotel=hotel)
+
+        if not Rooms.objects.filter(
+                     Q(hotel=hotel), Q(room_number=room.room_number),
+                     Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date)
+        ).exists():
+            return Response('Not created, Booking is exist', status=status.HTTP_400_BAD_REQUEST)
+
+        room = final_price(room=room, start_date=start_date, end_date=end_date, request=request)
+
+        booking = Bookings(agent_reservation=agent1,
+                           booking_stat=True,
+                           hotels=hotel,
+                           checkin=start_date,
+                           checkout=end_date,
+                           rate_price=room.room_price,
+                           room=room)
+        booking.save()
+        return Response('Successfully created', status=status.HTTP_201_CREATED)
+
+
 class RoomsFilterDateView(APIView):
 
     def get(self, request):
@@ -40,63 +79,26 @@ class RoomsFilterDateView(APIView):
 
     def post(self, request):
 
-         start_date = request.data.get("start_date")
-         end_date = request.data.get("end_date")
+         start_date, end_date = str_to_date(request)
 
-
-         rooms = Rooms.objects.all()
-         libre_rooms = []
-         for room in rooms:
-            if not Bookings.objects.filter(room=room).exists():
-                libre_rooms.append(room)
-            else:
-                checkroom = Bookings.objects.get(room=room)
-                start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
-                start_date = start_date.date()
-                end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-                end_date = end_date.date()
-                if not date_intersection((start_date, end_date), (checkroom.checkin, checkroom.checkout)):
-                    libre_rooms.append(room)
-
-                #libre_rooms = final_price(libre_rooms=libre_rooms, start_date=start_date, end_date=end_date)
-
-         serializer = RoomSerializer(libre_rooms, many=True)
+         free_rooms = Rooms.objects.filter(
+             Q(bookings=None) | (
+                     Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date))
+         )
+         free_rooms = final_price_list(free_rooms=free_rooms, start_date=start_date, end_date=end_date, request=request)
+         serializer = RoomFilterSerializer(free_rooms, many=True)
          return Response({"rooms": serializer.data})
 
 
-def date_intersection(t1, t2):
-    t1start, t1end = t1[0], t1[1]
-    t2start, t2end = t2[0], t2[1]
+class MyBookingsView(APIView):
 
-    if t1end < t2start: return False
-    if t1end == t2start: return True
-    if t1start == t2start: return True
-    if t1start < t2start and t2start < t1end: return True
-    if t1start > t2start and t1end < t2end: return True
-    if t1start < t2start and t1end > t2end: return True
-    if t1start < t2end and t1end > t2end: return True
-    if t1start > t2start and t1start < t2end: return True
-    if t1start == t2end: return True
-    if t1end == t2end: return True
-    if t1start > t2end: return False
+    def get(self, request):
 
+        agent_name = request.user.username
+        agent = User.objects.get(username=agent_name)
+        agent1 = AgentReservation.objects.get(agent=agent)
 
-def final_price(libre_rooms, start_date, end_date):
-    rooms = libre_rooms
-    libre_rooms = []
-    for room in rooms:
-        hotel = Hotel.objects.get(hotel_name=room.hotel.hotel_name)
-
-        coefficients = Coefficient.objects.filter(hotel=hotel)
-
-        for coefficient in coefficients:
-
-            if not date_intersection((start_date, end_date), (coefficient.start_date, coefficient.end_date)):
-                room.room_rate_price = room.room_rate_price * int(abs((end_date - start_date).days))
-                room.save()
-                libre_rooms.append(room)
-            else:
-                pass
-
-    return libre_rooms
+        bookings = Bookings.objects.filter(agent_reservation=agent1)
+        serializer = BookingSerializer(bookings, many=True)
+        return Response({"Bookings": serializer.data})
 
