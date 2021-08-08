@@ -78,9 +78,6 @@ class HomePageView(View):
         context = {'user': user, 'hotels': hotels, 'form': form}
         return render(request, "homepage.html", context)
 
-    def post(self, request, *args, **kwargs):
-        pass
-
 
 class CreateRoom(View):
 
