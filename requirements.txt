@@ -10,3 +10,5 @@ requests==2.25.1
 SQLAlchemy==1.4.11
 sqlparse==0.4.1
 djangorestframework==3.12.4
+geopy~=2.2.0
+environs~=9.3.2
