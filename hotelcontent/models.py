@@ -1,7 +1,9 @@
 from datetime import date
-from django.urls import reverse
-from django.db import models
+
 from django.contrib.auth import get_user_model
+from django.db import models
+from django.urls import reverse
+# from django_earthdistance.models import EarthDistanceQuerySet
 
 User = get_user_model()
 
@@ -43,7 +45,7 @@ class RoomTypes(models.Model):
     hotel = models.ForeignKey(Hotel, verbose_name="Отель", on_delete=models.CASCADE, default=0)
 
     def __str__(self):
-        return '{}/{}'.format(self.room_type_name, self.room_type_price)
+        return '{}'.format(self.room_type_name)
 
 
 class Amenity(models.Model):
@@ -53,7 +55,7 @@ class Amenity(models.Model):
     hotel = models.ForeignKey(Hotel, verbose_name="Отель", on_delete=models.CASCADE, default=0)
 
     def __str__(self):
-        return '{}/{}'.format(self.amenity_name, self.amenity_price)
+        return '{}'.format(self.amenity_name)
 
 
 class Rooms(models.Model):
@@ -84,11 +86,11 @@ class BookingStatus(models.Model):
 class Bookings(models.Model):
     agent_reservation = models.ForeignKey(AgentReservation, on_delete=models.CASCADE)
     booking_status = models.ForeignKey(BookingStatus, on_delete=models.CASCADE)
-    hotels = models.ManyToManyField(Hotel)
+    hotels = models.ForeignKey(Hotel, on_delete=models.CASCADE, default=0)
     checkin = models.DateField()
-    checkout = models.DateField(blank=True, null=True)
+    checkout = models.DateField()
     rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=0)
-    #room = FK
+    room = models.ForeignKey(Rooms, on_delete=models.CASCADE, default=0)
 
     def __str__(self):
         return '{}/{}'.format(self.agent_reservation, self.hotels, self.checkin, self.checkout, self.rate_price)
@@ -110,5 +112,7 @@ class RateAmenity(models.Model):
 
     def __str__(self):
         return '{}'.format(self.amenity)
+
+
 
 

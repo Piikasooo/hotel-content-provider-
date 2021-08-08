@@ -103,6 +103,7 @@ class CreateRoom(View):
 
         amenities = request.POST.getlist('amenity')
         hotel = Hotel.objects.get(admin=user, url=slug)
+        total = 0
 
         if len(amenities) == 0:
             amenities = Amenity.objects.filter(hotel=hotel)
@@ -114,7 +115,7 @@ class CreateRoom(View):
 
         for amenity in amenities:
             am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)
-            total =+ am.amenity_price
+            total = total + am.amenity_price
 
         room_number = request.POST.get('room_number')
         allrooms = Rooms.objects.filter(hotel=hotel)
