@@ -48,6 +48,7 @@ HotelDetail
         <p class="card-text">Long: {{ hotel.hotel_long }}, Lat: {{ hotel.hotel_lat }}</p>
     </div>
         </div>
+        <a href="{% url 'hotel_update' hotel.url %}" class="btn btn-primary">Update Information</a>
 
     </div>
 </div>
