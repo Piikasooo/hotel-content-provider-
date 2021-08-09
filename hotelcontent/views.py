@@ -111,7 +111,6 @@ class CreateRoom(View):
         user = User.objects.get(username=user)
 
         amenities = request.POST.getlist('amenity')
-        print(amenities)
         hotel = Hotel.objects.get(admin=user, url=slug)
 
         if len(amenities) == 0:
@@ -124,7 +123,8 @@ class CreateRoom(View):
 
         total = 0
         for amenity in amenities:
-            am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)
+            amenity_name = amenity.split('/')[0]
+            am = Amenity.objects.get(hotel=hotel, amenity_name=amenity_name)
             total = total + am.amenity_price
 
         room_number = request.POST.get('room_number')
@@ -140,7 +140,6 @@ class CreateRoom(View):
                 return render(request, "createroom.html", context)
 
         room_type = request.POST.get('dropdown')
-
         if str(room_type) == 'Select type room':
             amenities = Amenity.objects.filter(hotel=hotel)
             room_types = RoomTypes.objects.filter(hotel=hotel)
@@ -148,18 +147,18 @@ class CreateRoom(View):
             alert = 'Select type room'
             messages.info(request, alert)
             return render(request, "createroom.html", context)
-
-        room_type = RoomTypes.objects.get(room_type_name=room_type, hotel=hotel)
+        room_type_name = room_type.split('/')[0]
+        room_type = RoomTypes.objects.get(room_type_name=room_type_name, hotel=hotel)
 
         room_rate_price = room_type.room_type_price + total
         room = Rooms(room_number=room_number, room_type=room_type, hotel=hotel, room_rate_price=room_rate_price)
         room.save()
 
         for amenity in amenities:
-            am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)
+            amenity_name = amenity.split('/')[0]
+            am = Amenity.objects.get(hotel=hotel, amenity_name=amenity_name)
             rate_amenity = RateAmenity(room=room, amenity=am)
             rate_amenity.save()
-
         alert = 'Successfully created new room'
         messages.info(request, alert)
         return HttpResponseRedirect('/homepage/')
