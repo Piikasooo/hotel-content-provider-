@@ -203,8 +203,7 @@ class HotelDetailView(View):
 
     def get(self, request, slug):
         hotel = Hotel.objects.get(url=slug)
-        amenities = Amenity.objects.filter(hotel=hotel)
-        context = {"hotel": hotel, "amenities": amenities}
+        context = {"hotel": hotel}
         return render(request, "hotel_detail.html", context)
 
     def post(self, request, slug):
@@ -370,3 +369,26 @@ class RoomDetailView(View):
             "amenities": amenities,
         }
         return render(request, "room_details.html", context)
+
+
+class HotelUpdateView(View):
+
+    def get(self, request, slug):
+        hotel = Hotel.objects.get(url=slug)
+        context = {"hotel": hotel}
+        return render(request, "hotel_update.html", context)
+
+    def post(self, request, slug):
+        hotel = Hotel.objects.get(url=slug)
+
+        hotel.hotel_name = request.POST.get('name')
+        hotel.hotel_long = float(request.POST.get('long'))
+        hotel.hotel_lat = float(request.POST.get('lat'))
+        hotel.hotel_email = request.POST.get('email')
+        hotel.hotel_url = request.POST.get('url')
+        hotel.hotel_description = request.POST.get('description')
+
+        hotel.save()
+        alert = 'Successfully update Hotel'
+        messages.info(request, alert)
+        return HttpResponseRedirect('/homepage/')
