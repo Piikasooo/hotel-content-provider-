@@ -76,8 +76,7 @@ class HomePageView(View):
 
         form = DeleteForm(request.POST or None)
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotels = Hotel.objects.filter(admin=user)
         context = {
@@ -95,8 +94,7 @@ class CreateRoom(View):
 
     def get(self, request, slug):
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotel = Hotel.objects.get(admin=user, url=slug)
         amenities = Amenity.objects.filter(hotel=hotel)
@@ -107,8 +105,7 @@ class CreateRoom(View):
 
     def post(self, request, slug):
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         amenities = request.POST.getlist('amenity')
         hotel = Hotel.objects.get(admin=user, url=slug)
@@ -166,15 +163,8 @@ class CreateRoom(View):
 
 class AddHotelView(View):
 
-    def get(self, request, *args, **kwargs):
-        form = AddHotelForm(request.POST or None)
-        context = {'form': form}
-        return render(request, 'add_hotel.html', context)
-
-    def post(self, request, *args, **kwargs):
-        form = AddHotelForm(request.POST or None)
-        user = request.session['data']
-        user = User.objects.get(username=user)
+    @classmethod
+    def _create_hotel(cls, form, user):
         if form.is_valid():
             new_hotel = form.save(commit=False)
             new_hotel.hotel_name = form.cleaned_data['hotel_name']
@@ -193,6 +183,17 @@ class AddHotelView(View):
             new_hotel.url = url
             new_hotel.save()
 
+            return new_hotel
+
+    def get(self, request, *args, **kwargs):
+        form = AddHotelForm(request.POST or None)
+        context = {'form': form}
+        return render(request, 'add_hotel.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = AddHotelForm(request.POST or None)
+        user = request.user
+        if self._create_hotel(form, user):
             return HttpResponseRedirect('/homepage/')
         context = {'form': form}
         return render(request, 'add_hotel.html', context)
@@ -220,8 +221,7 @@ class CreateAmenityView(View):
 
         form = CreateAmenityForm(request.POST or None)
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotel = Hotel.objects.get(url=slug, admin=user)
 
@@ -232,9 +232,7 @@ class CreateAmenityView(View):
     def post(self, request, slug):
 
         form = CreateAmenityForm(request.POST or None)
-        user = request.session['data']
-
-        user = User.objects.get(username=user)
+        user = request.user
 
         if form.is_valid():
 
@@ -268,8 +266,7 @@ class CreateCoefficientView(View):
 
     def get(self, request, slug):
         form = CreateCoefficientForm(request.POST or None)
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotel = Hotel.objects.get(url=slug, admin=user)
 
@@ -279,8 +276,7 @@ class CreateCoefficientView(View):
 
     def post(self, request, slug):
         form = CreateCoefficientForm(request.POST or None)
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotel = Hotel.objects.get(url=slug, admin=user)
 
@@ -302,8 +298,7 @@ class CreateCoefficientView(View):
 class RoomsView(View):
 
     def get(self, request, slug):
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
         hotel = Hotel.objects.get(url=slug)
         rooms = Rooms.objects.filter(hotel=hotel)
         context = {
@@ -319,8 +314,7 @@ class AddRoomTypeView(View):
     def get(self, request, slug):
         form = AddRoomTypeForm(request.POST or None)
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotel = Hotel.objects.get(url=slug)
         room_type = RoomTypes.objects.filter(hotel=hotel)
@@ -334,9 +328,7 @@ class AddRoomTypeView(View):
 
     def post(self, request, slug):
         form = AddRoomTypeForm(request.POST or None)
-        user = request.session['data']
-
-        user = User.objects.get(username=user)
+        user = request.user
 
         if form.is_valid():
             hotel = Hotel.objects.get(url=slug, admin=user)
