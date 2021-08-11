@@ -1,17 +1,16 @@
-from openexchangerate import OpenExchangeRates
+from openexchange.currency_api import get_currency
+import datetime
 
 
-client = OpenExchangeRates(api_key="6ff8323a7eed443693dd7d6bfbe2490b")
-
-
-def currency(price_uah, request):
+def convert_currency(price_uah, request):
     if not request.data.get("currency"):
         uah = price_uah
         return uah
     elif request.data.get("currency") == "USD":
-        all_currency = client.latest()
-        uah = float(all_currency[0]['UAH'])
-        price_in_usd = float(price_uah) / uah
+        currency_name = "UAH"
+        date_need = datetime.date.today()
+        currency_usd_uah = get_currency(date_need, currency_name)
+        price_in_usd = float(price_uah) / currency_usd_uah
         return price_in_usd
     elif request.data.get("currency") == "EUR":
         pass
