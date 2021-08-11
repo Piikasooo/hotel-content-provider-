@@ -182,7 +182,6 @@ class AddHotelView(View):
             url = hotelname + 'Hotel'
             new_hotel.url = url
             new_hotel.save()
-
             return new_hotel
 
     def get(self, request, *args, **kwargs):
@@ -217,6 +216,26 @@ class HotelDetailView(View):
 
 class CreateAmenityView(View):
 
+    @classmethod
+    def _create_amenity(cls, request, form, slug, user):
+        if form.is_valid():
+            hotel = Hotel.objects.get(url=slug, admin=user)
+            amenity = form.save(commit=False)
+            amenity_name = form.cleaned_data['amenity_name']
+            if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
+                amenities = Amenity.objects.filter(hotel=hotel)
+                context = {'user': user, 'hotel': hotel, 'form': form, 'amenities': amenities}
+                alert = 'This amenity name exist'
+                messages.info(request, alert)
+                return render(request, "createamenity.html", context)
+            amenity.amenity_name = amenity_name
+            amenity.amenity_price = form.cleaned_data['amenity_price']
+            amenity.hotel = hotel
+            amenity.save()
+            alert = 'Successfully created new amenity'
+            messages.info(request, alert)
+            return amenity
+
     def get(self, request, slug):
 
         form = CreateAmenityForm(request.POST or None)
@@ -233,30 +252,9 @@ class CreateAmenityView(View):
 
         form = CreateAmenityForm(request.POST or None)
         user = request.user
-
-        if form.is_valid():
-
-            hotel = Hotel.objects.get(url=slug, admin=user)
-
-            amenity = form.save(commit=False)
-
-            amenity_name = form.cleaned_data['amenity_name']
-
-            if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
-                amenities = Amenity.objects.filter(hotel=hotel)
-                context = {'user': user, 'hotel': hotel, 'form': form, 'amenities': amenities}
-                alert = 'This amenity name exist'
-                messages.info(request, alert)
-                return render(request, "createamenity.html", context)
-
-            amenity.amenity_name = amenity_name
-            amenity.amenity_price = form.cleaned_data['amenity_price']
-            amenity.hotel = hotel
-            amenity.save()
-
-            alert = 'Successfully created new amenity'
-            messages.info(request, alert)
-            return HttpResponseRedirect('/amenity/' + hotel.url + '/')
+        amenity = self._create_amenity(request, form, slug, user)
+        if amenity:
+            return HttpResponseRedirect('/amenity/' + amenity.hotel.url + '/')
         hotel = Hotel.objects.get(url=slug)
         context = {'user': user, 'hotel': hotel, 'form': form}
         return render(request, "createamenity.html", context)
@@ -277,7 +275,6 @@ class CreateCoefficientView(View):
     def post(self, request, slug):
         form = CreateCoefficientForm(request.POST or None)
         user = request.user
-
         hotel = Hotel.objects.get(url=slug, admin=user)
 
         if form.is_valid():

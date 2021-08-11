@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
+from django import forms
+from hotelcontent.forms import AddHotelForm
+from hotelcontent.views import AddHotelView
 from hotelcontent.models import Hotel, Admin, RoomTypes, Amenity, Rooms
 import json
 
@@ -89,12 +92,26 @@ class TestView(TestCase):
             'hotel_name': 'hotel_test',
             'hotel_long': '3.000002',
             'hotel_lat': '3.000003',
-            'hotel_email': 'emailfortest@gmail.ua',
-            'hotel_url': 'http://www.testhotelurl.net',
+            'hotel_email': 'emailfortest@gmail.net',
+            'hotel_url': 'http://www.testhotelurl.com',
             'hotel_description': 'some words',
         })
         self.assertEquals(response.status_code, 302)
         self.assertTrue(Hotel.objects.filter(hotel_name='hotel_test').exists())
+
+    def test_add_hotel_method(self):
+        user = User.objects.get(username='tst')
+        hotel_data = {
+            'hotel_name': 'hotel_test',
+            'hotel_long': '3.000002',
+            'hotel_lat': '3.000003',
+            'hotel_email': 'emailfortest@gmail.net',
+            'hotel_url': 'http://www.testhotelurl.com',
+            'hotel_description': 'some words',
+        }
+        form = AddHotelForm(data=hotel_data)
+        url = AddHotelView._create_hotel(form, user).url
+        self.assertEquals(url, 'hotel_testHotel')
 
     def test_rooms_GET(self):
         self.assert_GET_method('rooms', 'rooms.html', ['setup_hotelHotel'])
