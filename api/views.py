@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation, User
 from .serializers import HotelsSerializer, RoomSerializer, RoomFilterSerializer, BookingSerializer
 from .functions import str_to_date, final_price_list, final_price
-from django.db.models import Q, When
+from django.db.models import Q
 from rest_framework import permissions
 
 
@@ -80,30 +80,15 @@ class RoomsFilterDateView(APIView):
     def post(self, request):
 
          start_date, end_date = str_to_date(request)
-         free_rooms = list(Rooms.objects.filter(
-             Q(bookings=None) | (
-                     Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date)
+
+         free_rooms = list(Rooms.objects.exclude(
+             Q(bookings__booking_stat=False)
+             & (
+                 (Q(bookings__checkin__lt=end_date) & Q(bookings__checkout__gte=end_date))
+                 | (Q(bookings__checkin__lte=start_date) & Q(bookings__checkout__gt=start_date))
              )
          ))
-
-         rooms2 = list(Rooms.objects.exclude(
-             Q(bookings=None) or
-             (Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date))
-         ))
-
-         print(free_rooms)
-         print(rooms2)
-
-         a = rooms2
-         b = free_rooms
-         for i in list(free_rooms):
-             if i in a:
-                 a.remove(i)
-                 b.remove(i)
-
-         print(a)
-         print(b)
-         free_rooms = final_price_list(free_rooms=b, start_date=start_date, end_date=end_date, request=request)
+         free_rooms = final_price_list(free_rooms=free_rooms, start_date=start_date, end_date=end_date, request=request)
          serializer = RoomFilterSerializer(free_rooms, many=True)
          return Response({"rooms": serializer.data})
 
@@ -113,10 +98,10 @@ class MyBookingsView(APIView):
     def get(self, request):
 
         agent_name = request.user.username
-        agent = User.objects.get(username=agent_name)
-        agent1 = AgentReservation.objects.get(agent=agent)
+        agent_object = User.objects.get(username=agent_name)
+        agent = AgentReservation.objects.get(agent=agent_object)
 
-        bookings = Bookings.objects.filter(agent_reservation=agent1)
+        bookings = Bookings.objects.filter(agent_reservation=agent)
         serializer = BookingSerializer(bookings, many=True)
         return Response({"Bookings": serializer.data})
 
