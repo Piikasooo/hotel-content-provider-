@@ -1,9 +1,6 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation
-from .serializers import HotelsSerializer, RoomSerializer, BookingSerializer
-import datetime
 from geopy.distance import great_circle
 from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation, User
 from .serializers import HotelsSerializer, RoomSerializer, RoomFilterSerializer, BookingSerializer
@@ -23,19 +20,26 @@ class HotelsView(APIView):
         filter_hotels = []
         lat = float(request.data.get("lat"))
         long = float(request.data.get("long"))
+        rad = float(request.data.get("rad"))
 
-        hotels = Hotel.objects.all()
+        # for hotel in hotels:
+        #   fhotel_long = float(hotel.hotel_long)
+        #   fhotel_lat = float(hotel.hotel_lat)
+        #   if great_circle((fhotel_lat, fhotel_long), (lat, long)).kilometers <= 10:
 
-        for hotel in hotels:
-            fhotel_long = float(hotel.hotel_long)
-            fhotel_lat = float(hotel.hotel_lat)
-            if great_circle((fhotel_lat, fhotel_long), (lat, long)).kilometers <= 10:
-                # distance(fhotel_lat, fhotel_long, lat, long) <= 10:
-                filter_hotels.append(hotel)
+        '''filter_hotels.append(Hotel.objects.raw('select * from hotelcontent_hotel where point(hotel_lat, '
+                                               'hotel_long) <@> point(46.433495, 30.763270) <= 5'))
+        '''
+
+        for p in Hotel.objects.raw(
+                'SELECT * FROM hotelcontent_hotel WHERE earth_distance(ll_to_earth(' + str(lat) + ', '
+                + str(long) + '),ll_to_earth(float8(hotel_lat), float8(hotel_long))) / 1000 <= ' + str(rad)):
+            filter_hotels.append(p)
 
         serializer = HotelsSerializer(filter_hotels, many=True)
 
-        return Response({"hotels in range 10km": serializer.data})
+        return Response({"hotels in range " + str(rad) + "km": serializer.data})
+
 
 """
 def distance(hotel_lat, hotel_long, filter_lat, filter_long):
@@ -68,6 +72,22 @@ def distance(hotel_lat, hotel_long, filter_lat, filter_long):
 """
 
 
+class CancelBooking(APIView):
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response("Cancel your booking by id!")
+
+    def post(self, request):
+        # agent_name = request.user.username
+        booking_id = request.data.get('id')
+        booking = Bookings.objects.get(id=booking_id)
+        booking.booking_stat = False
+        booking.save()
+
+        return Response('Successfully canceled', status=status.HTTP_200_OK)
+
+
 class RoomsHotelView(APIView):
 
     def get(self, request, slug):
@@ -86,14 +106,12 @@ class RoomsView(APIView):
 
 
 class BookingView(APIView):
-
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         return Response("Create new Booking!")
 
     def post(self, request):
-
         agent_name = request.user.username
         agent = User.objects.get(username=agent_name)
         agent1 = AgentReservation.objects.get(agent=agent)
@@ -104,8 +122,8 @@ class BookingView(APIView):
         room = Rooms.objects.get(room_number=room_num, hotel=hotel)
 
         if not Rooms.objects.filter(
-                     Q(hotel=hotel), Q(room_number=room.room_number),
-                     Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date)
+                Q(hotel=hotel), Q(room_number=room.room_number),
+                Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date)
         ).exists():
             return Response('Not created, Booking is exist', status=status.HTTP_400_BAD_REQUEST)
 
@@ -130,22 +148,20 @@ class RoomsFilterDateView(APIView):
         return Response({"rooms": serializer.data})
 
     def post(self, request):
+        start_date, end_date = str_to_date(request)
 
-         start_date, end_date = str_to_date(request)
-
-         free_rooms = Rooms.objects.filter(
-             Q(bookings=None) | (
-                     Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date))
-         )
-         free_rooms = final_price_list(free_rooms=free_rooms, start_date=start_date, end_date=end_date, request=request)
-         serializer = RoomFilterSerializer(free_rooms, many=True)
-         return Response({"rooms": serializer.data})
+        free_rooms = Rooms.objects.filter(
+            Q(bookings=None) | (
+                    Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date))
+        )
+        free_rooms = final_price_list(free_rooms=free_rooms, start_date=start_date, end_date=end_date, request=request)
+        serializer = RoomFilterSerializer(free_rooms, many=True)
+        return Response({"rooms": serializer.data})
 
 
 class MyBookingsView(APIView):
 
     def get(self, request):
-
         agent_name = request.user.username
         agent = User.objects.get(username=agent_name)
         agent1 = AgentReservation.objects.get(agent=agent)
@@ -153,4 +169,3 @@ class MyBookingsView(APIView):
         bookings = Bookings.objects.filter(agent_reservation=agent1)
         serializer = BookingSerializer(bookings, many=True)
         return Response({"Bookings": serializer.data})
-
