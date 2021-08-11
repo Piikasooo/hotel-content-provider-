@@ -29,10 +29,10 @@ class RoomFilterSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    booking_status = serializers.CharField()
+
     hotels = serializers.CharField()
     room = serializers.CharField()
 
     class Meta:
         model = Bookings
-        fields = ['hotels', 'room', 'checkin', 'checkout', 'rate_price']
+        fields = ['id', 'hotels', 'room', 'checkin', 'checkout', 'rate_price', 'booking_stat']
