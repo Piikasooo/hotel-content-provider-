@@ -1,7 +1,7 @@
 from datetime import datetime
 from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation
 import datetime
-from .currency import currency
+from .currency import convert_currency
 
 
 def str_to_date(request):
@@ -25,7 +25,7 @@ def final_price(room, start_date, end_date, request):
         if (coefficient.start_date > end_date) | (coefficient.end_date < start_date):
             room.room_price = 0
             room.room_price = room.room_rate_price * int((end_date - start_date).days)
-            room.room_price = currency(room.room_price, request)
+            room.room_price = convert_currency(room.room_price, request)
             room.save()
         else:
             room.room_price = 0
@@ -36,7 +36,7 @@ def final_price(room, start_date, end_date, request):
                     total_price = total_price + float(room.room_rate_price)
                 st_date = st_date + datetime.timedelta(days=1)
             room.room_price = total_price
-            room.room_price = currency(room.room_price, request)
+            room.room_price = convert_currency(room.room_price, request)
             room.save()
     return room
 
@@ -56,7 +56,7 @@ def final_price_list(free_rooms, start_date, end_date, request):
             if (coefficient.start_date > end_date) | (coefficient.end_date < start_date):
                 room.room_price = 0
                 room.room_price = room.room_rate_price * int((end_date - start_date).days)
-                room.room_price = currency(room.room_price, request)
+                room.room_price = convert_currency(room.room_price, request)
                 room.save()
                 free_rooms.append(room)
             else:
@@ -68,7 +68,7 @@ def final_price_list(free_rooms, start_date, end_date, request):
                         total_price = total_price + float(room.room_rate_price)
                     st_date = st_date + datetime.timedelta(days=1)
                 room.room_price = total_price
-                room.room_price = currency(room.room_price, request)
+                room.room_price = convert_currency(room.room_price, request)
                 room.save()
                 free_rooms.append(room)
     return free_rooms
