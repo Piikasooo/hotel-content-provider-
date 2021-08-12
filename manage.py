@@ -2,9 +2,6 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from openexchange.currency_api import start_server
-from threading import Thread
-from time import sleep
 
 
 def main():
@@ -22,7 +19,4 @@ def main():
 
 
 if __name__ == '__main__':
-    th = Thread(target=start_server)
-    th.start()
-
     main()
