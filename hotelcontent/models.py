@@ -22,7 +22,7 @@ class Hotel(models.Model):
     hotel_lat = models.DecimalField(max_digits=9, decimal_places=6)
     hotel_email = models.EmailField(max_length=254)
     hotel_url = models.URLField()
-
+    hotel_image = models.ImageField(null=True)
     admin = models.ForeignKey(User, verbose_name="Администратор", on_delete=models.CASCADE)
     hotel_description = models.TextField(default='Описание отеля')
 
@@ -71,22 +71,15 @@ class Rooms(models.Model):
 
 
 class AgentReservation(models.Model):
-    agent_details = models.CharField(max_length=200)
+    agent_id = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.agent_details
-
-
-class BookingStatus(models.Model):
-    booking_status_description = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.booking_status_description
+        return '{}'.format(self.agent_id)
 
 
 class Bookings(models.Model):
     agent_reservation = models.ForeignKey(AgentReservation, on_delete=models.CASCADE)
-    booking_status = models.ForeignKey(BookingStatus, on_delete=models.CASCADE)
+    booking_stat = models.BooleanField(null=True)
     hotels = models.ManyToManyField(Hotel)
     # room
     checkin = models.DateField()
