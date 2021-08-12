@@ -34,15 +34,15 @@ CreateAmenity
     <tr>
       <th scope="col">Amenity name</th>
       <th scope="col">Amenity price</th>
-
+        <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody>
   {% for amenity in amenities %}
     <tr>
-      <td>{{ amenity.amenity_name }}</td>
-      <td>{{ amenity.amenity_price }}</td>
-
+      <td contenteditable="true">{{ amenity.amenity_name }}</td>
+      <td contenteditable="true">{{ amenity.amenity_price }}</td>
+        <td><button class="btn btn-danger" type="submit" name="{{ amenity.id }}">Update</button></td>
     </tr>
     {% endfor %}
   </tbody>

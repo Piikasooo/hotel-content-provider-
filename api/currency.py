@@ -14,7 +14,6 @@ def convert_currency(price_uah, request):
         if request.data.get("currency") == "USD":
             return price_in_usd
         else:
-            print("I am here")
             currency_name = request.data.get("currency")
             currency_name_usd = get_currency(date_need, currency_name)
             price_in_name_currency = price_in_usd * currency_name_usd
