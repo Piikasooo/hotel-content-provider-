@@ -63,7 +63,7 @@ def now_currency():
     all_currency = client.latest()
     current_currency = all_currency[0]
     date_name_file = "openexchange/currency/" + str(datetime.date.today()) + ".csv"
-    print("GET-VALUE")
+    print("GET-VALUE" + " " + str(datetime.datetime.now()))
     with open(date_name_file, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
         for row in current_currency.items():
@@ -99,7 +99,7 @@ def start_server():
         if not os.path.exists(date_name):
             now_currency()
         else:
-            print("EXIST")
+            print("EXIST" + " " + str(datetime.datetime.now()))
             time.sleep(3600)
 
 
