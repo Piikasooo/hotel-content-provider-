@@ -5,7 +5,6 @@ from datetime import date
 
 
 class CreateAmenityForm(forms.ModelForm):
-
     amenity_name = forms.CharField(max_length=200)
     amenity_price = forms.DecimalField(max_digits=7, decimal_places=2)
 
@@ -20,7 +19,6 @@ class CreateAmenityForm(forms.ModelForm):
 
 
 class CreateCoefficientForm(forms.ModelForm):
-
     start_date = forms.DateField()
     end_date = forms.DateField()
     coefficient = forms.DecimalField(max_digits=7, decimal_places=2)
@@ -56,7 +54,6 @@ class CreateCoefficientForm(forms.ModelForm):
 
 
 class CreateRoomForm(forms.ModelForm):
-
     hotel = forms.CharField(max_length=120)
     room_type = forms.CharField(max_length=120)
     room_number = forms.IntegerField()
@@ -79,7 +76,6 @@ class CreateRoomForm(forms.ModelForm):
 
 
 class DeleteForm(forms.ModelForm):
-
     hotelname = forms.CharField(max_length=200)
 
     def __init__(self, *args, **kwargs):
@@ -89,7 +85,7 @@ class DeleteForm(forms.ModelForm):
     def clean(self):
         hotelname = self.cleaned_data['hotelname']
 
-    # фильтровать только отели самого админа
+        # фильтровать только отели самого админа
         if not Hotel.objects.filter(hotel_name=hotelname).exists():
             raise forms.ValidationError(f'Отель с даным названием "{hotelname}" не найден в системе')
         return self.cleaned_data
@@ -100,7 +96,6 @@ class DeleteForm(forms.ModelForm):
 
 
 class LoginForm(forms.ModelForm):
-
     password = forms.CharField(widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
@@ -125,7 +120,6 @@ class LoginForm(forms.ModelForm):
 
 
 class RegistrationForm(forms.ModelForm):
-
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     password = forms.CharField(widget=forms.PasswordInput)
     phone = forms.CharField(required=False)
@@ -189,12 +183,10 @@ class AddHotelForm(forms.ModelForm):
         self.fields['hotel_description'].label = 'Описание'
 
     def clean(self):
-        hotel_name = self.cleaned_data['hotel_name']
         hotel_long = self.cleaned_data['hotel_long']
         hotel_lat = self.cleaned_data['hotel_lat']
         hotel_email = self.cleaned_data['hotel_email']
         hotel_url = self.cleaned_data['hotel_url']
-        hotel_description = self.cleaned_data['hotel_description']
 
         if Hotel.objects.filter(hotel_long=hotel_long, hotel_lat=hotel_lat).exists():
             raise forms.ValidationError(f'Отель по координатам {hotel_lat}, {hotel_long} уже зарегистрирован!')
@@ -211,23 +203,23 @@ class AddHotelForm(forms.ModelForm):
 
 
 class AddRoomTypeForm(forms.ModelForm):
-
     room_type_name = forms.CharField(max_length=200, required=True)
     room_type_description = forms.CharField(max_length=200, required=True)
     room_type_price = forms.DecimalField(max_digits=6, decimal_places=2, required=True)
+    hotel_field = ''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, hotel, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['room_type_name'].label = 'Введите название для типа комнаты'
         self.fields['room_type_description'].label = 'Введите описание для даного типа комнаты'
         self.fields['room_type_price'].label = 'Введите цену даного типа комнаты'
+        self.hotel_field = hotel
 
     def clean(self):
         room_type_name = self.cleaned_data['room_type_name']
-        room_type_description = self.cleaned_data['room_type_description']
-        room_type_price = self.cleaned_data['room_type_price']
+        hotel = Hotel.objects.get(hotel_url=self.hotel_field)
 
-        if RoomTypes.objects.filter(room_type_name=room_type_name).exists():
+        if RoomTypes.objects.filter(room_type_name=room_type_name, hotel=hotel).exists():
             raise forms.ValidationError(f'Room type with a name {room_type_name}  already exists!')
 
         return self.cleaned_data
