@@ -3,9 +3,7 @@ from datetime import date
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-
-
-# from django_earthdistance.models import EarthDistanceQuerySet
+from django_earthdistance.models import EarthDistanceQuerySet
 
 User = get_user_model()
 
@@ -31,6 +29,8 @@ class Hotel(models.Model):
     hotel_description = models.TextField(default='Описание отеля')
 
     url = models.SlugField(max_length=160, unique=True)
+
+    objects = EarthDistanceQuerySet.as_manager()
 
     def __str__(self):
         return self.hotel_name

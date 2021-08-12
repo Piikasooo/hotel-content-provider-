@@ -1,7 +1,7 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from geopy.distance import great_circle
 from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation, User
 from .serializers import HotelsSerializer, RoomSerializer, RoomFilterSerializer, BookingSerializer
 from .functions import str_to_date, final_price_list, final_price
@@ -17,59 +17,20 @@ class HotelsView(APIView):
         return Response({"hotels": serializer.data})
 
     def post(self, request):
-        filter_hotels = []
+        #filter_hotels = []
         lat = float(request.data.get("lat"))
         long = float(request.data.get("long"))
         rad = float(request.data.get("rad"))
 
-        # for hotel in hotels:
-        #   fhotel_long = float(hotel.hotel_long)
-        #   fhotel_lat = float(hotel.hotel_lat)
-        #   if great_circle((fhotel_lat, fhotel_long), (lat, long)).kilometers <= 10:
-
-        '''filter_hotels.append(Hotel.objects.raw('select * from hotelcontent_hotel where point(hotel_lat, '
-                                               'hotel_long) <@> point(46.433495, 30.763270) <= 5'))
-        '''
-
-        for p in Hotel.objects.raw(
+        '''for p in Hotel.objects.raw(
                 'SELECT * FROM hotelcontent_hotel WHERE earth_distance(ll_to_earth(' + str(lat) + ', '
                 + str(long) + '),ll_to_earth(float8(hotel_lat), float8(hotel_long))) / 1000 <= ' + str(rad)):
             filter_hotels.append(p)
-
+        '''
+        filter_hotels = Hotel.objects.in_distance(rad*1000, fields=['hotel_lat', 'hotel_long'], points=[lat, long])
         serializer = HotelsSerializer(filter_hotels, many=True)
 
         return Response({"hotels in range " + str(rad) + "km": serializer.data})
-
-
-"""
-def distance(hotel_lat, hotel_long, filter_lat, filter_long):
-
-    # pi - число pi, rad - радиус сферы (Земли)
-    rad = 6372795
-
-    # в радианах
-    lat1 = hotel_lat * math.pi / 180.
-    lat2 = filter_lat * math.pi / 180.
-    long1 = hotel_long * math.pi / 180.
-    long2 = filter_long * math.pi / 180.
-
-    # косинусы и синусы широт и разницы долгот
-    cl1 = math.cos(lat1)
-    cl2 = math.cos(lat2)
-    sl1 = math.sin(lat1)
-    sl2 = math.sin(lat2)
-    delta = long2 - long1
-    cdelta = math.cos(delta)
-    sdelta = math.sin(delta)
-
-    # вычисления длины большого круга
-    y = math.sqrt(math.pow(cl2 * sdelta, 2) + math.pow(cl1 * sl2 - sl1 * cl2 * cdelta, 2))
-    x = sl1 * sl2 + cl1 * cl2 * cdelta
-    ad = math.atan2(y, x)
-    dist = ad * rad
-
-    return dist / 1000
-"""
 
 
 class CancelBooking(APIView):
@@ -79,13 +40,19 @@ class CancelBooking(APIView):
         return Response("Cancel your booking by id!")
 
     def post(self, request):
-        # agent_name = request.user.username
+        """user_name = request.user.username
+        user = User.objects.get(username=user_name)
+        agent = AgentReservation.objects.get(agent=user)
+        """
         booking_id = request.data.get('id')
-        booking = Bookings.objects.get(id=booking_id)
-        booking.booking_stat = False
-        booking.save()
 
-        return Response('Successfully canceled', status=status.HTTP_200_OK)
+        try:
+            booking = Bookings.objects.get(id=booking_id)
+            booking.booking_stat = False
+            booking.save()
+            return Response('This booking has been canceled', status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response("Error! Booking with this id doesn't exist!", status=status.HTTP_404_NOT_FOUND)
 
 
 class RoomsHotelView(APIView):
