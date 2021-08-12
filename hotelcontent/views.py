@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
 from .forms import LoginForm, RegistrationForm, DeleteForm, CreateCoefficientForm, AddHotelForm, CreateAmenityForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, Coefficient
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -11,6 +11,7 @@ from .forms import CreateAmenityForm, CreateRoomForm, LoginForm, RegistrationFor
     AddRoomTypeForm
 from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity
 from .models import Admin, Hotel, Rooms
+from django.db.models import Q
 
 
 class LoginView(View):
@@ -74,18 +75,24 @@ class HomePageView(View):
 
     def get(self, request):
 
-        form = DeleteForm(request.POST or None)
+        try:
+            form = DeleteForm(request.POST or None)
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+            user = request.session['data']
+            user = User.objects.get(username=user)
 
-        hotels = Hotel.objects.filter(admin=user)
-        context = {
-            'user': user,
-            'hotels': hotels,
-            'form': form
-        }
-        return render(request, "hotels.html", context)
+            hotels = Hotel.objects.filter(admin=user)
+            context = {
+                'user': user,
+                'hotels': hotels,
+                'form': form
+            }
+            return render(request, "hotels.html", context)
+
+        except KeyError:
+            alert = 'Not login'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
 
     def post(self, request, *args, **kwargs):
         pass
@@ -94,6 +101,11 @@ class HomePageView(View):
 class CreateRoom(View):
 
     def get(self, request, slug):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
 
         user = request.session['data']
         user = User.objects.get(username=user)
@@ -168,6 +180,12 @@ class CreateRoom(View):
 class AddHotelView(View):
 
     def get(self, request, *args, **kwargs):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
         form = AddHotelForm(request.POST or None)
         context = {'form': form}
         return render(request, 'add_hotel.html', context)
@@ -202,6 +220,12 @@ class AddHotelView(View):
 class HotelDetailView(View):
 
     def get(self, request, slug):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
         hotel = Hotel.objects.get(url=slug)
         context = {"hotel": hotel}
         return render(request, "hotel_detail.html", context)
@@ -217,6 +241,11 @@ class HotelDetailView(View):
 class CreateAmenityView(View):
 
     def get(self, request, slug):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
 
         form = CreateAmenityForm(request.POST or None)
 
@@ -267,6 +296,13 @@ class CreateAmenityView(View):
 class CreateCoefficientView(View):
 
     def get(self, request, slug):
+
+        if not authentication(request):
+
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
         form = CreateCoefficientForm(request.POST or None)
         user = request.session['data']
         user = User.objects.get(username=user)
@@ -302,6 +338,12 @@ class CreateCoefficientView(View):
 class RoomsView(View):
 
     def get(self, request, slug):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
         user = request.session['data']
         user = User.objects.get(username=user)
         hotel = Hotel.objects.get(url=slug)
@@ -317,6 +359,12 @@ class RoomsView(View):
 class AddRoomTypeView(View):
 
     def get(self, request, slug):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
         form = AddRoomTypeForm(request.POST or None)
 
         user = request.session['data']
@@ -358,6 +406,12 @@ class AddRoomTypeView(View):
 class RoomDetailView(View):
 
     def get(self, request, slug, room_number):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
         hotel = Hotel.objects.get(url=slug)
         room = Rooms.objects.get(hotel=hotel, room_number=room_number)
         room_type = RoomTypes.objects.get(id=room.room_type.id)
@@ -386,9 +440,26 @@ class HotelUpdateView(View):
         hotel.hotel_lat = float(request.POST.get('lat'))
         hotel.hotel_email = request.POST.get('email')
         hotel.hotel_url = request.POST.get('url')
-        hotel.hotel_description = request.POST.get('description')
 
+        if Hotel.objects.filter(
+            (Q(hotel_long=hotel.hotel_long)&Q(hotel_lat=hotel.hotel_lat)) |
+            Q(hotel_email=hotel.hotel_email) | Q(hotel_url=hotel.hotel_url)
+        ).exists():
+
+            alert = 'Hotel is exist'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/homepage/')
+
+        hotel.hotel_description = request.POST.get('description')
         hotel.save()
         alert = 'Successfully update Hotel'
         messages.info(request, alert)
         return HttpResponseRedirect('/homepage/')
+
+
+def authentication(request):
+    try:
+        if request.session['data']:
+            return True
+    except KeyError:
+        return False
