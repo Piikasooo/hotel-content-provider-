@@ -316,12 +316,13 @@ class RoomsView(View):
 class AddRoomTypeView(View):
 
     def get(self, request, slug):
-        form = AddRoomTypeForm(request.POST or None)
 
         user = request.session['data']
         user = User.objects.get(username=user)
 
         hotel = Hotel.objects.get(url=slug)
+        form = AddRoomTypeForm(hotel.hotel_url, request.POST or None)
+
         room_type = RoomTypes.objects.filter(hotel=hotel)
         context = {
             'user': user,
@@ -332,14 +333,13 @@ class AddRoomTypeView(View):
         return render(request, "add_room_type.html", context)
 
     def post(self, request, slug):
-        form = AddRoomTypeForm(request.POST or None)
         user = request.session['data']
-
         user = User.objects.get(username=user)
+        hotel = Hotel.objects.get(url=slug, admin=user)
+
+        form = AddRoomTypeForm(hotel.hotel_url, request.POST or None)
 
         if form.is_valid():
-            hotel = Hotel.objects.get(url=slug, admin=user)
-
             room_type = form.save(commit=False)
             room_type.room_type_name = form.cleaned_data['room_type_name']
             room_type.room_type_description = form.cleaned_data['room_type_description']
