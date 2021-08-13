@@ -33,6 +33,7 @@ CreateRoomType
     <tr>
       <th scope="col">Room Type name</th>
       <th scope="col">Room Type price</th>
+        <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -40,6 +41,7 @@ CreateRoomType
     <tr>
       <td>{{ roomtype.room_type_name }}</td>
       <td>{{ roomtype.room_type_price }}</td>
+        <td><a href="{% url 'type_room_update' hotel.url  roomtype.room_type_name %}" class="btn btn-success">Details</a></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -64,4 +66,14 @@ CreateRoomType
 </div>
 
 <hr>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+
 {% endblock %}

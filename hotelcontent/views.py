@@ -428,6 +428,12 @@ class RoomDetailView(View):
 class HotelUpdateView(View):
 
     def get(self, request, slug):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
         hotel = Hotel.objects.get(url=slug)
         context = {"hotel": hotel}
         return render(request, "hotel_update.html", context)
@@ -442,7 +448,7 @@ class HotelUpdateView(View):
         hotel.hotel_url = request.POST.get('url')
 
         if Hotel.objects.filter(
-            (Q(hotel_long=hotel.hotel_long)&Q(hotel_lat=hotel.hotel_lat)) |
+            (Q(hotel_long=hotel.hotel_long) & Q(hotel_lat=hotel.hotel_lat)) |
             Q(hotel_email=hotel.hotel_email) | Q(hotel_url=hotel.hotel_url)
         ).exists():
 
@@ -457,6 +463,118 @@ class HotelUpdateView(View):
         return HttpResponseRedirect('/homepage/')
 
 
+class AmenityUpdate(View):
+
+    def get(self, request, slug, amenity_name):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
+        hotel = Hotel.objects.get(url=slug)
+        amenity = Amenity.objects.get(hotel=hotel, amenity_name=amenity_name)
+        context = {"hotel": hotel, "amenity": amenity}
+        return render(request, "amenity_update.html", context)
+
+    def post(self, request, slug, amenity_name):
+
+        hotel = Hotel.objects.get(url=slug)
+        amenity = Amenity.objects.get(hotel=hotel, amenity_name=amenity_name)
+
+        if request.POST.get("update"):
+            amenity.amenity_name = request.POST.get("amenity_name")
+            amenity.amenity_price = request.POST.get("amenity_price")
+            amenity.save()
+            alert = 'Successfully update amenity {0}'.format(amenity_name)
+            messages.info(request, alert)
+            route = '/amenity/{0}/'.format(hotel.url)
+            return HttpResponseRedirect(route)
+        else:
+            amenity_id = request.POST.get("delete")
+            amenity_for_del = Amenity.objects.get(id=amenity_id)
+            amenity_for_del.delete()
+            alert = 'Successfully delete amenity'
+            messages.info(request, alert)
+            route = '/amenity/{0}/'.format(hotel.url)
+            return HttpResponseRedirect(route)
+
+
+class TypeRoomUpdate(View):
+
+    def get(self, request, slug, room_type_name):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
+        hotel = Hotel.objects.get(url=slug)
+        room_type = RoomTypes.objects.get(hotel=hotel, room_type_name=room_type_name)
+        context = {"hotel": hotel, "room_type": room_type}
+        return render(request, "room_type_update.html", context)
+
+    def post(self, request, slug, room_type_name):
+
+        hotel = Hotel.objects.get(url=slug)
+        room_type = RoomTypes.objects.get(hotel=hotel, room_type_name=room_type_name)
+
+        if request.POST.get("update"):
+            room_type.room_type_name = request.POST.get("room_type_name")
+            room_type.room_type_description = request.POST.get("room_type_description")
+            room_type.room_type_price = request.POST.get("room_type_price")
+            room_type.save()
+            alert = 'Successfully update type room {0}'.format(room_type_name)
+            messages.info(request, alert)
+            route = '/add_room_type/{0}/'.format(hotel.url)
+            return HttpResponseRedirect(route)
+        else:
+            room_type_id = request.POST.get("delete")
+            room_type_del = RoomTypes.objects.get(id=room_type_id)
+            room_type_del.delete()
+            alert = 'Successfully delete type room'
+            messages.info(request, alert)
+            route = '/add_room_type/{0}/'.format(hotel.url)
+            return HttpResponseRedirect(route)
+
+
+class CoefficientUpdate(View):
+
+    def get(self, request, slug, id):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
+        hotel = Hotel.objects.get(url=slug)
+        coefficient = Coefficient.objects.get(id=id)
+        context = {"hotel": hotel, "coefficient": coefficient}
+        return render(request, "coefficient_update.html", context)
+
+    def post(self, request, slug, id):
+
+        hotel = Hotel.objects.get(url=slug)
+        coefficient = Coefficient.objects.get(id=id)
+
+        if request.POST.get("update"):
+            coefficient.start_date = request.POST.get("start_date")
+            coefficient.end_date = request.POST.get("end_date")
+            coefficient.coefficient = request.POST.get("coefficient")
+            coefficient.save()
+            alert = 'Successfully update coefficient'
+            messages.info(request, alert)
+            route = '/coefficient/{0}/'.format(hotel.url)
+            return HttpResponseRedirect(route)
+        else:
+            coefficient.delete()
+            alert = 'Successfully delete coefficient'
+            messages.info(request, alert)
+            route = '/coefficient/{0}/'.format(hotel.url)
+            return HttpResponseRedirect(route)
+
+
+# utils.py
 def authentication(request):
     try:
         if request.session['data']:

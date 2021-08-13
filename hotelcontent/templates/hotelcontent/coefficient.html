@@ -37,6 +37,7 @@ Coefficients of <em>{{ hotel.hotel_name }}</em>
       <th scope="col">Start date</th>
       <th scope="col">End date</th>
       <th scope="col">Coefficient</th>
+        <th scope="col"> Action</th>
     </tr>
   </thead>
   <tbody>
@@ -45,7 +46,7 @@ Coefficients of <em>{{ hotel.hotel_name }}</em>
       <td>{{ coefficient.start_date }}</td>
       <td>{{ coefficient.end_date }}</td>
       <td>{{ coefficient.coefficient }}</td>
-
+        <td><a href="{% url 'coef_update' hotel.url coefficient.id %}" class="btn btn-success">Details</a></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -73,5 +74,12 @@ Coefficients of <em>{{ hotel.hotel_name }}</em>
 
 <hr>
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 {% endblock %}
