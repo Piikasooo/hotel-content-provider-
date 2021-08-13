@@ -1,6 +1,8 @@
 from .views import LoginView, RegistrationView, HomePageView, CreateRoom, AddHotelView, HotelDetailView, \
     CreateAmenityView, RoomsView, AddRoomTypeView, RoomDetailView
-from .views import LoginView, RegistrationView, HomePageView, CreateRoom, AddHotelView, HotelDetailView, CreateAmenityView, CreateCoefficientView, HotelUpdateView
+from .views import LoginView, RegistrationView, HomePageView, CreateRoom, \
+        AddHotelView, HotelDetailView, CreateAmenityView, \
+        CreateCoefficientView, HotelUpdateView, AmenityUpdate, TypeRoomUpdate, CoefficientUpdate
 from django.urls import path
 
 
@@ -21,5 +23,8 @@ urlpatterns = [
     path('<slug:slug>/', HotelDetailView.as_view(), name="hotel_detail"),
 
 
-    path('UpdateInfo/<slug:slug>/', HotelUpdateView.as_view(), name='hotel_update')
+    path('UpdateInfo/<slug:slug>/', HotelUpdateView.as_view(), name='hotel_update'),
+    path('amenity/<slug:slug>/<str:amenity_name>/', AmenityUpdate.as_view(), name='amenity_update'),
+    path('room_type/<slug:slug>/<str:room_type_name>/', TypeRoomUpdate.as_view(), name='type_room_update'),
+    path('coefficient_update/<slug:slug>/<int:id>/', CoefficientUpdate.as_view(), name='coef_update')
 ]
