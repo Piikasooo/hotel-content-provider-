@@ -1,13 +1,17 @@
+import sys
 from datetime import date
+from io import BytesIO
+
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.urls import reverse
 from django.db import models
 from django.contrib.auth import get_user_model
+from PIL import Image
 
 User = get_user_model()
 
 
 class Admin(models.Model):
-
     user = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE)
     phone = models.CharField(max_length=20, verbose_name='Номер телефона', null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name='Адрес', null=True, blank=True)
@@ -22,7 +26,7 @@ class Hotel(models.Model):
     hotel_lat = models.DecimalField(max_digits=9, decimal_places=6)
     hotel_email = models.EmailField(max_length=254)
     hotel_url = models.URLField()
-    hotel_image = models.ImageField(null=True)
+    hotel_image = models.ImageField(null=True, upload_to='hotels')
     admin = models.ForeignKey(User, verbose_name="Администратор", on_delete=models.CASCADE)
     hotel_description = models.TextField(default='Описание отеля')
 
@@ -33,8 +37,21 @@ class Hotel(models.Model):
 
     def get_absolute_url(self):
         return reverse("hotel_detail", kwargs={"slug": self.url})
+'''
+    def save(self, *args, **kwargs):
+        image = self.hotel_image
+        img = Image.open(image)
+        new_img = img.convert('RGB')
+        resized_new_img = new_img.resize((800, 600), Image.ANTIALIAS)
+        filestream = BytesIO()
+        resized_new_img.save(filestream, 'JPEG', quality=90)
+        filestream.seek(0)
+        self.hotel_image = InMemoryUploadedFile(
+            filestream, 'ImageField', self.hotel_image.name, 'jpeg/Image', sys.getsizeof(filestream), None
+        )
+        super().save(*args, **kwargs)
 
-
+'''
 class RoomTypes(models.Model):
     room_type_name = models.CharField(max_length=200)
     room_type_description = models.CharField(max_length=200)
@@ -57,7 +74,6 @@ class Amenity(models.Model):
 
 
 class Rooms(models.Model):
-
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     room_type = models.ForeignKey(RoomTypes, on_delete=models.CASCADE)
     room_number = models.IntegerField()
