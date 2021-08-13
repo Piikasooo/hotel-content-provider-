@@ -5,7 +5,7 @@ from django import forms
 from hotelcontent.forms import AddHotelForm
 from hotelcontent.views import AddHotelView
 from hotelcontent.models import Hotel, Admin, RoomTypes, Amenity, Rooms
-import json
+from unittest.mock import Mock, patch
 
 
 class TestView(TestCase):
@@ -87,6 +87,7 @@ class TestView(TestCase):
     def test_add_hotel_GET(self):
         self.assert_GET_method('add_hotel', 'add_hotel.html')
 
+    @patch('hotelcontent.views.AddHotelView._create_hotel', Mock(return_value=True))
     def test_add_hotel_POST(self):
         response = self.client.post(reverse('add_hotel'), {
             'hotel_name': 'hotel_test',
