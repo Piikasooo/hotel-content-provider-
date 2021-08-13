@@ -30,20 +30,24 @@ Home Page
     {% endfor %}
 </ul>
 {% endif %}
+<center>
 
 <div class="my-3 p-3 bg-white rounded box-shadow">
+    <center>
     <h3 class="border-bottom border-gray pb-2 mb-0"> The Hotels List </h3>
-
+</center>
     <hr>
 
 <div class="row gy-5">
 
     {% for hotel in hotels %}
+<center>
 
     <div class="col-md-8">
         <div class="card mb-3" style="max-width: 1000px;">
             <div class="row g-0">
                 <div class="col-md-4">
+                    <img src="{{ hotel.hotel_image.url }}" width="220" height="180" hspace="25" vspace="25">
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
@@ -56,12 +60,15 @@ Home Page
             </div>
         </div>
     </div>
+</center>
 
     {% endfor %}
 
 </div>
 
 </div>
+</center>
+
 <hr>
 
 

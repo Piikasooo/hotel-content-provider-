@@ -35,17 +35,15 @@ HotelDetail
         </div>
         <div class="row align-items-start">
     <div class="col">
-      <p class="card-text">{{ hotel.hotel_description }}</p>
+        <img src="{{ hotel.hotel_image.url }}" class="img-thumbnail" hspace="15" vspace="10">
     </div>
     <div class="col">
-        <p class="card-text">Email: {{ hotel.hotel_email }}</p>
+        <p class="card-text" >Email: {{ hotel.hotel_email }}</p>
         <p class="card-text">Site: {{ hotel.hotel_url }}</p>
         <p class="card-text">Long: {{ hotel.hotel_long }}, Lat: {{ hotel.hotel_lat }}</p>
+        <p class="card-text">{{ hotel.hotel_description }}</p>
     </div>
         </div>
-
-
-
     </div>
 </div>
 
