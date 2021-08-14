@@ -31,22 +31,6 @@ DEBUG = env.str('DEBUG')
 
 ALLOWED_HOSTS = []
 
-# CELERY SETTINGS
-CELERY_TIMEZONE = "UTC"
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
-# CELERY SETTINGS
-
-
-# REDIS SETTINGS
-REDIS_HOST = 'localhost'
-REDIS_PORT = '6379'
-BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
-BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
-# REDIS SETTINGS
-
-
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

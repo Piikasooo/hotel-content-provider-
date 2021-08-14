@@ -20,7 +20,7 @@ def now_currency():
 
 
 def get_currency(date_today, currency_name):
-    date_name_need = "currency/" + str(date_today) + ".csv"
+    date_name_need = "openexchange/currency/" + str(date_today) + ".csv"
     with open(date_name_need, "r", newline="") as file:
         reader = csv.reader(file)
         for row in reader:
