@@ -1,6 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
+*.pyc
 *$py.class
 Hotel_content_provider/__pycache__/
 Hotel_content_provider/__pycache__/
