@@ -1,6 +1,10 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation
+from .serializers import HotelsSerializer, RoomSerializer, BookingSerializer
+import datetime
+from geopy.distance import great_circle
 from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation, User
 from .serializers import HotelsSerializer, RoomSerializer, RoomFilterSerializer, BookingSerializer
 from .functions import str_to_date, final_price_list, final_price
@@ -14,6 +18,54 @@ class HotelsView(APIView):
         hotels = Hotel.objects.all()
         serializer = HotelsSerializer(hotels, many=True)
         return Response({"hotels": serializer.data})
+
+    def post(self, request):
+        filter_hotels = []
+        lat = float(request.data.get("lat"))
+        long = float(request.data.get("long"))
+
+        hotels = Hotel.objects.all()
+
+        for hotel in hotels:
+            fhotel_long = float(hotel.hotel_long)
+            fhotel_lat = float(hotel.hotel_lat)
+            if great_circle((fhotel_lat, fhotel_long), (lat, long)).kilometers <= 10:
+                # distance(fhotel_lat, fhotel_long, lat, long) <= 10:
+                filter_hotels.append(hotel)
+
+        serializer = HotelsSerializer(filter_hotels, many=True)
+
+        return Response({"hotels in range 10km": serializer.data})
+
+"""
+def distance(hotel_lat, hotel_long, filter_lat, filter_long):
+
+    # pi - число pi, rad - радиус сферы (Земли)
+    rad = 6372795
+
+    # в радианах
+    lat1 = hotel_lat * math.pi / 180.
+    lat2 = filter_lat * math.pi / 180.
+    long1 = hotel_long * math.pi / 180.
+    long2 = filter_long * math.pi / 180.
+
+    # косинусы и синусы широт и разницы долгот
+    cl1 = math.cos(lat1)
+    cl2 = math.cos(lat2)
+    sl1 = math.sin(lat1)
+    sl2 = math.sin(lat2)
+    delta = long2 - long1
+    cdelta = math.cos(delta)
+    sdelta = math.sin(delta)
+
+    # вычисления длины большого круга
+    y = math.sqrt(math.pow(cl2 * sdelta, 2) + math.pow(cl1 * sl2 - sl1 * cl2 * cdelta, 2))
+    x = sl1 * sl2 + cl1 * cl2 * cdelta
+    ad = math.atan2(y, x)
+    dist = ad * rad
+
+    return dist / 1000
+"""
 
 
 class RoomsHotelView(APIView):
