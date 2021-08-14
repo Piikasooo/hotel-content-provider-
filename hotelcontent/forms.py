@@ -32,20 +32,20 @@ class CreateCoefficientForm(forms.ModelForm):
         self.fields['coefficient'].label = 'Введите коефициент'
 
     def clean_start_date(self):
-        start_date = self.cleaned_data['start_date']
+        start_date = self.cleaned_data.get('start_date')
         if start_date < date.today():
             raise forms.ValidationError(f'Начальная дата выбрана некоректно')
         return start_date
 
     def clean_end_date(self):
-        start_date = self.cleaned_data['start_date']
-        end_date = self.cleaned_data['end_date']
+        start_date = self.cleaned_data.get('start_date')
+        end_date = self.cleaned_data.get('end_date')
         if start_date > end_date:
             raise forms.ValidationError(f'Конечная дата выбрана некоректно')
         return end_date
 
     def clean(self):
-        coefficient = self.cleaned_data['coefficient']
+        coefficient = self.cleaned_data.get('coefficient')
         if coefficient < 0:
             raise forms.ValidationError(f'Коефицент введен неверно')
         return self.cleaned_data
@@ -68,8 +68,8 @@ class CreateRoomForm(forms.ModelForm):
         self.fields['room_number'].label = 'Введите номер комнаты'
 
     def clean_roomtype(self):
-        room_type = self.cleaned_data['roomtype']
-        if not RoomTypes.objects.filter(hotel_type_name=room_type).exists():
+        room_type = self.cleaned_data['room_type']
+        if not RoomTypes.objects.filter(room_type_name=room_type).exists():
             raise forms.ValidationError(f'Тип комнаты с даным названием "{room_type}" не найден в системе')
         return self.room_type
 
@@ -189,12 +189,12 @@ class AddHotelForm(forms.ModelForm):
         self.fields['hotel_description'].label = 'Описание'
 
     def clean(self):
-        hotel_name = self.cleaned_data['hotel_name']
-        hotel_long = self.cleaned_data['hotel_long']
-        hotel_lat = self.cleaned_data['hotel_lat']
-        hotel_email = self.cleaned_data['hotel_email']
-        hotel_url = self.cleaned_data['hotel_url']
-        hotel_description = self.cleaned_data['hotel_description']
+        hotel_name = self.cleaned_data.get('hotel_name')
+        hotel_long = self.cleaned_data.get('hotel_long')
+        hotel_lat = self.cleaned_data.get('hotel_lat')
+        hotel_email = self.cleaned_data.get('hotel_email')
+        hotel_url = self.cleaned_data.get('hotel_url')
+        hotel_description = self.cleaned_data.get('hotel_description')
 
         if Hotel.objects.filter(hotel_long=hotel_long, hotel_lat=hotel_lat).exists():
             raise forms.ValidationError(f'Отель по координатам {hotel_lat}, {hotel_long} уже зарегистрирован!')
@@ -223,9 +223,9 @@ class AddRoomTypeForm(forms.ModelForm):
         self.fields['room_type_price'].label = 'Введите цену даного типа комнаты'
 
     def clean(self):
-        room_type_name = self.cleaned_data['room_type_name']
-        room_type_description = self.cleaned_data['room_type_description']
-        room_type_price = self.cleaned_data['room_type_price']
+        room_type_name = self.cleaned_data.get('room_type_name')
+        room_type_description = self.cleaned_data.get('room_type_description')
+        room_type_price = self.cleaned_data.get('room_type_price')
 
         if RoomTypes.objects.filter(room_type_name=room_type_name).exists():
             raise forms.ValidationError(f'Room type with a name {room_type_name}  already exists!')
