@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}
-Registration
-{% endblock %}
-
 {% load crispy_forms_tags %}
 
-{% block content %}
+{% block title %}
+    Регистрация
+{% endblock %}
 
+{% block page_name %}
+  Registration
+{% endblock %}
+
+{% block content %}
 
   <form action="" method="post">
     {% csrf_token %}
