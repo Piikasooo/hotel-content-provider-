@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}
+RoomsPage
+{% endblock %}
+
+{% block page_name %}
+Rooms <em>{{ hotel.hotel_name }}</em>
+{% endblock %}
+
+{% block buttons %}
+<a href="{% url 'add_room' hotel.url %}" class="btn btn-outline-light me-2">Add New Room </a>
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
+
+
+{% block content %}
+
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<div class="p-3  ">
+
+        {% for room in rooms %}
+
+<div class="my-3 p-4 bg-body rounded shadow">
+
+    <div class="px-4 py-1 my-1 text-center">
+
+        <hr>
+ <div class="row align-items-start">
+    <div class="col">
+      <a href="{% url 'room_detail' hotel.url room.room_number %}">
+          <p class="card-text">Room № {{ room.room_number }}</p>
+      </a>
+    </div>
+    <div class="col">
+        <p class="card-text">Type: {{ room.room_type.room_type_name }}</p>
+    </div>
+     <div class="col">
+        <p class="card-text">Price: {{ room.room_rate_price }}</p>
+    </div>
+        </div>
+<hr>
+    </div>
+</div>
+        {% endfor %}
+
+</div>
+
+
+
+
+
+{% endblock %}
