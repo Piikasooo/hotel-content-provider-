@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Hotel, RoomTypes, Amenity, Coefficient, Rooms
+from .models import Hotel, RoomTypes, Amenity, Coefficient, Rooms, HotelsImages
 from datetime import date
 
 
@@ -166,20 +166,16 @@ class RegistrationForm(forms.ModelForm):
 
 
 class AddHotelForm(forms.ModelForm):
-    hotel_name = forms.CharField(required=True)
-    hotel_long = forms.DecimalField(max_digits=9, decimal_places=6, required=True)
-    hotel_lat = forms.DecimalField(max_digits=9, decimal_places=6, required=True)
-    hotel_email = forms.EmailField(required=True)
-    hotel_url = forms.URLField(required=True)
+    hotel_name = forms.CharField(required=True, label='Название')
+    hotel_long = forms.DecimalField(max_digits=9, decimal_places=6, required=True, label='Долгота')
+    hotel_lat = forms.DecimalField(max_digits=9, decimal_places=6, required=True, label='Широта')
+    hotel_email = forms.EmailField(required=True, label='Электронная почта')
+    hotel_url = forms.URLField(required=True, label='Сайт')
     hotel_description = forms.TextInput()
+    hotel_image = forms.ImageField(label='Фото')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['hotel_name'].label = 'Название'
-        self.fields['hotel_long'].label = 'Долгота'
-        self.fields['hotel_lat'].label = 'Широта'
-        self.fields['hotel_email'].label = 'Электронная почта'
-        self.fields['hotel_url'].label = 'Сайт'
         self.fields['hotel_description'].label = 'Описание'
 
     def clean(self):
@@ -199,7 +195,8 @@ class AddHotelForm(forms.ModelForm):
 
     class Meta:
         model = Hotel
-        fields = ['hotel_name', 'hotel_long', 'hotel_lat', 'hotel_email', 'hotel_url', 'hotel_description']
+        fields = ['hotel_name', 'hotel_long', 'hotel_lat', 'hotel_email',
+                  'hotel_url', 'hotel_description', 'hotel_image']
 
 
 class AddRoomTypeForm(forms.ModelForm):
@@ -227,3 +224,18 @@ class AddRoomTypeForm(forms.ModelForm):
     class Meta:
         model = RoomTypes
         fields = ['room_type_name', 'room_type_description', 'room_type_price']
+
+
+class AddHotelImagesForm(forms.ModelForm):
+    hotel_photo = forms.ImageField(label='Photo', required=True)
+    photo_description = forms.CharField(max_length=50, required=True)
+
+    hotel_field = ''
+
+    def __init__(self, hotel, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hotel_field = hotel
+
+    class Meta:
+        model = HotelsImages
+        fields = ['hotel_photo', 'photo_description']

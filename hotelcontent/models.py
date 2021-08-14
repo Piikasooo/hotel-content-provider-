@@ -17,7 +17,7 @@ class Admin(models.Model):
     address = models.CharField(max_length=255, verbose_name='Адрес', null=True, blank=True)
 
     def __str__(self):
-        return self.user
+        return '{}'.format(self.user)
 
 
 class Hotel(models.Model):
@@ -26,7 +26,7 @@ class Hotel(models.Model):
     hotel_lat = models.DecimalField(max_digits=9, decimal_places=6)
     hotel_email = models.EmailField(max_length=254)
     hotel_url = models.URLField()
-    hotel_image = models.ImageField(null=True, upload_to='hotels')
+    hotel_image = models.ImageField(upload_to='hotels', null=True, blank=True)
     admin = models.ForeignKey(User, verbose_name="Администратор", on_delete=models.CASCADE)
     hotel_description = models.TextField(default='Описание отеля')
 
@@ -37,7 +37,7 @@ class Hotel(models.Model):
 
     def get_absolute_url(self):
         return reverse("hotel_detail", kwargs={"slug": self.url})
-'''
+    '''
     def save(self, *args, **kwargs):
         image = self.hotel_image
         img = Image.open(image)
@@ -52,6 +52,8 @@ class Hotel(models.Model):
         super().save(*args, **kwargs)
 
 '''
+
+
 class RoomTypes(models.Model):
     room_type_name = models.CharField(max_length=200)
     room_type_description = models.CharField(max_length=200)
@@ -86,11 +88,21 @@ class Rooms(models.Model):
         return '{}/{}'.format(self.hotel, self.room_number, self.room_type, self.room_rate_price)
 
 
-class AgentReservation(models.Model):
-    agent_id = models.CharField(max_length=200)
+class HotelsImages(models.Model):
+    hotel_photo = models.ImageField(null=True, upload_to='hotels')
+    photo_description = models.CharField(blank=True, max_length=50)
+
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{}'.format(self.agent_id)
+        return '{}'.format(self.hotel)
+
+
+class AgentReservation(models.Model):
+    agent = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return '{}'.format(self.agent)
 
 
 class Bookings(models.Model):

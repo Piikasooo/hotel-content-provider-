@@ -37,7 +37,6 @@ Coefficients of <em>{{ hotel.hotel_name }}</em>
       <th scope="col">Start date</th>
       <th scope="col">End date</th>
       <th scope="col">Coefficient</th>
-        <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -46,7 +45,6 @@ Coefficients of <em>{{ hotel.hotel_name }}</em>
       <td>{{ coefficient.start_date }}</td>
       <td>{{ coefficient.end_date }}</td>
       <td>{{ coefficient.coefficient }}</td>
-        <td><button name="id" type="submit" class="btn btn-danger" value="{{ coefficient.id }}">Delete</button></td>
 
     </tr>
     {% endfor %}
