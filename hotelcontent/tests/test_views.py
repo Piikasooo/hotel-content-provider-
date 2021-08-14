@@ -98,7 +98,7 @@ class TestView(TestCase):
             'hotel_description': 'some words',
         })
         self.assertEquals(response.status_code, 302)
-        self.assertTrue(Hotel.objects.filter(hotel_name='hotel_test').exists())
+        self.assertFalse(Hotel.objects.filter(hotel_name='hotel_test').exists())
 
     def test_add_hotel_method(self):
         user = User.objects.get(username='tst')
