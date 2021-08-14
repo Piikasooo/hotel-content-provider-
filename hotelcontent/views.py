@@ -3,10 +3,9 @@ from django.shortcuts import render
 from django.views.generic import View
 from .forms import LoginForm, RegistrationForm, DeleteForm, CreateCoefficientForm, AddHotelForm, CreateAmenityForm
 from django.contrib.auth import authenticate, login, logout
-from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, Coefficient
+from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, Coefficient, Bookings
 from django.contrib.auth.models import User
 from django.contrib import messages
-
 from .forms import CreateAmenityForm, CreateRoomForm, LoginForm, RegistrationForm, DeleteForm, AddHotelForm, \
     AddRoomTypeForm
 from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity
@@ -16,7 +15,7 @@ from django.db.models import Q
 
 class LoginView(View):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
 
         try:
             del request.session['data']
@@ -28,7 +27,7 @@ class LoginView(View):
             context = {'form': form}
             return render(request, 'login.html', context)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         form = LoginForm(request.POST or None)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -43,12 +42,12 @@ class LoginView(View):
 
 class RegistrationView(View):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         form = RegistrationForm(request.POST or None)
         context = {'form': form}
         return render(request, 'registration.html', context)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         form = RegistrationForm(request.POST or None)
         if form.is_valid():
             new_user = form.save(commit=False)
@@ -98,10 +97,6 @@ class HomePageView(View):
             'form': form
         }
         return render(request, "hotels.html", context)
-
-        alert = 'Not login'
-        messages.info(request, alert)
-        return HttpResponseRedirect('/login/')
 
 
 class CreateRoom(View):
@@ -183,7 +178,7 @@ class CreateRoom(View):
 
 class AddHotelView(View):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
 
         if not authentication(request):
             alert = 'NOT LOGIN'
@@ -194,7 +189,7 @@ class AddHotelView(View):
         context = {'form': form}
         return render(request, 'add_hotel.html', context)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         form = AddHotelForm(request.POST or None)
         user = request.session['data']
         user = User.objects.get(username=user)
@@ -277,11 +272,9 @@ class CreateAmenityView(View):
             amenity_name = form.cleaned_data['amenity_name']
 
             if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
-                amenities = Amenity.objects.filter(hotel=hotel)
-                context = {'user': user, 'hotel': hotel, 'form': form, 'amenities': amenities}
                 alert = 'This amenity name exist'
                 messages.info(request, alert)
-                return render(request, "createamenity.html", context)
+                return HttpResponseRedirect('/amenity/' + hotel.url + '/')
 
             amenity.amenity_name = amenity_name
             amenity.amenity_price = form.cleaned_data['amenity_price']
@@ -291,9 +284,6 @@ class CreateAmenityView(View):
             alert = 'Successfully created new amenity'
             messages.info(request, alert)
             return HttpResponseRedirect('/amenity/' + hotel.url + '/')
-        hotel = Hotel.objects.get(url=slug)
-        context = {'user': user, 'hotel': hotel, 'form': form}
-        return render(request, "createamenity.html", context)
 
 
 class CreateCoefficientView(View):
@@ -400,6 +390,7 @@ class AddRoomTypeView(View):
             room_type.save()
 
             return HttpResponseRedirect('/add_room_type/' + hotel.url + '/')
+
         hotel = Hotel.objects.get(url=slug)
         room_type = RoomTypes.objects.filter(hotel=hotel)
         context = {'user': user, 'hotel': hotel, 'form': form, 'room_type': room_type}
@@ -450,17 +441,13 @@ class HotelUpdateView(View):
         hotel.hotel_email = request.POST.get('email')
         hotel.hotel_url = request.POST.get('url')
 
-        if Hotel.objects.filter(
-            (Q(hotel_long=hotel.hotel_long) & Q(hotel_lat=hotel.hotel_lat)) |
-            Q(hotel_email=hotel.hotel_email) | Q(hotel_url=hotel.hotel_url)
-        ).exists():
-
-            alert = 'Hotel is exist'
-            messages.info(request, alert)
-            return HttpResponseRedirect('/homepage/')
-
         hotel.hotel_description = request.POST.get('description')
         hotel.save()
+
+        bookings_hotels = list(Bookings.objects.filter(hotels=hotel))
+        for booking in bookings_hotels:
+            booking.hotel = hotel.hotel_name
+            booking.save()
         alert = 'Successfully update Hotel'
         messages.info(request, alert)
         return HttpResponseRedirect('/homepage/')
@@ -645,6 +632,11 @@ class RateUpdateView(View):
             room.room_type = room_type_object
             room.room_rate_price = room_rate_price
             room.save()
+
+            bookings_room = Bookings.objects.filter(hotels=hotel, room=room, booking_stat=True)
+            for booking in bookings_room:
+                booking.room_number = room_number
+                booking.save()
 
             for amenity in amenities:
                 am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)

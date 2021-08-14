@@ -1,9 +1,7 @@
 from datetime import date
-
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-# from django_earthdistance.models import EarthDistanceQuerySet
 
 User = get_user_model()
 
@@ -65,7 +63,7 @@ class Rooms(models.Model):
     room_number = models.IntegerField()
     room_rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00)
 
-    # room_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00, blank=True)
+    room_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00, blank=True)
 
     def __str__(self):
         return '{}/{}'.format(self.hotel, self.room_number, self.room_type, self.room_rate_price)
