@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block title %}
-CreateAmenity
+CreateRoomType
 {% endblock %}
 
 {% load crispy_forms_tags %}
 
 {% block page_name %}
- Amenities of <em>{{ hotel.hotel_name }}</em>
+ Room Types of <em>{{ hotel.hotel_name }}</em>
 {% endblock %}
 
 {% block end %}
@@ -15,35 +15,33 @@ CreateAmenity
         <span class="navbar-text"> User: {{ user.username }}    </span>
     </form>
     <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
-    {% endblock %}
+{% endblock %}
 
 {% block content %}
 
 <div class="container">
   <div class="row">
-
-
-      <div class="col">
-      {% if amenities %}
+    <div class="col">
+      {% if room_type %}
 <nav class="navbar navbar-light bg-light">
   <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1"> Available Amenities</span>
+    <span class="navbar-brand mb-0 h1"> Available Room Types </span>
   </div>
 </nav>
 <table class="table table-striped">
   <thead>
     <tr>
-      <th scope="col">Amenity name</th>
-      <th scope="col">Amenity price</th>
+      <th scope="col">Room Type name</th>
+      <th scope="col">Room Type price</th>
         <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody>
-  {% for amenity in amenities %}
-    <tr >
-      <td>{{ amenity.amenity_name }}</td>
-      <td>{{ amenity.amenity_price }}</td>
-        <td><a href="{% url 'amenity_update' hotel.url amenity.amenity_name %}" class="btn btn-success">Details</a></td>
+  {% for roomtype in room_type %}
+    <tr>
+      <td>{{ roomtype.room_type_name }}</td>
+      <td>{{ roomtype.room_type_price }}</td>
+        <td><a href="{% url 'type_room_update' hotel.url  roomtype.room_type_name %}" class="btn btn-success">Details</a></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -54,25 +52,20 @@ CreateAmenity
     <div class="col">
         <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
-                <span class="navbar-brand mb-0 h1"> Add New Amenity </span>
+                <span class="navbar-brand mb-0 h1">Add New Room Type </span>
             </div>
         </nav>
 
         <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <input type="submit" class="btn btn-success me-2" value="Add Amenity">
-
+            <input type="submit" class="btn btn-success" value="Add Room Type">
         </form>
     </div>
   </div>
 </div>
 
-
-
-<hr class="text-dark">
-
-
+<hr>
 {% if messages %}
 <ul class="messages">
     {% for message in messages %}
