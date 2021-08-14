@@ -1,27 +1,32 @@
 {% extends 'base.html' %}
 
+{% load crispy_forms_tags %}
+
 {% block title %}
-Login
+    Авторизация
 {% endblock %}
 
-{% load crispy_forms_tags %}
+{% block page_name %}
+Welcome
+{% endblock %}
 
 {% block content %}
 
-<body class="text-center">
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
 
-<main class="form-signin">
-    <form action="" method="post">
+
+<form action="" method="post">
     {% csrf_token %}
     {{ form|crispy }}
     <input type="submit" class="btn btn-primary" value="Sign in">
     <a href="{% url 'registration' %}" class="btn btn-outline-secondary">Registration</a>
-    <p class="mt-5 mb-3 text-muted">© 2017–2021</p>
-  </form>
-</main>
-<div class="mallbery-caa" style="z-index: 2147483647 !important; text-transform: none !important; position: fixed;"></div>
-</body>
-
+</form>
 
 
 {% endblock %}
