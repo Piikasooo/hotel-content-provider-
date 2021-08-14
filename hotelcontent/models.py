@@ -64,8 +64,7 @@ class Rooms(models.Model):
     room_type = models.ForeignKey(RoomTypes, on_delete=models.CASCADE)
     room_number = models.IntegerField()
     room_rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00)
-
-    # room_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00, blank=True)
+    room_price = models.DecimalField(max_digits=7, decimal_places=2, default=200.00, blank=True)
 
     def __str__(self):
         return '{}/{}'.format(self.hotel, self.room_number, self.room_type, self.room_rate_price)
