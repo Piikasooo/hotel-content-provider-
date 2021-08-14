@@ -2,18 +2,18 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from hotelcontent.models import Hotel, Rooms, RateAmenity, Bookings, Coefficient, AgentReservation, User, HotelsImages
+from hotelcontent.models import Hotel, Rooms, Bookings, AgentReservation, User
 from .serializers import HotelsSerializer, RoomSerializer, RoomFilterSerializer, BookingSerializer
 from .functions import str_to_date, final_price_list, final_price
-from django.db.models import Q, F
+from django.db.models import Q
 from rest_framework import permissions
 
 
 class HotelsView(APIView):
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         hotels = Hotel.objects.all()
-        images = HotelsImages.objects.filter()
         serializer = HotelsSerializer(hotels, many=True)
         return Response({"hotels": serializer.data})
 
@@ -28,7 +28,6 @@ class HotelsView(APIView):
                 + str(long) + '),ll_to_earth(float8(hotel_lat), float8(hotel_long))) / 1000 <= ' + str(rad)):
             filter_hotels.append(p)
 
-        # filter_hotels = Hotel.objects.in_distance(rad*1000, fields=['hotel_lat', 'hotel_long'], points=[lat, long])
         serializer = HotelsSerializer(filter_hotels, many=True)
 
         return Response({"hotels in range " + str(rad) + "km": serializer.data})
@@ -41,14 +40,14 @@ class CancelBooking(APIView):
         return Response("Cancel your booking by id!")
 
     def post(self, request):
-        """user_name = request.user.username
+        user_name = request.user.username
         user = User.objects.get(username=user_name)
         agent = AgentReservation.objects.get(agent=user)
-        """
+
         booking_id = request.data.get('id')
 
         try:
-            booking = Bookings.objects.get(id=booking_id)
+            booking = Bookings.objects.get(id=booking_id, agent_reservation=agent)
             booking.booking_stat = False
             booking.save()
             return Response('This booking has been canceled', status=status.HTTP_200_OK)
@@ -57,6 +56,7 @@ class CancelBooking(APIView):
 
 
 class RoomsHotelView(APIView):
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, slug):
         hotel = Hotel.objects.get(url=slug)
@@ -66,6 +66,7 @@ class RoomsHotelView(APIView):
 
 
 class RoomsView(APIView):
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         rooms = Rooms.objects.all()
@@ -109,6 +110,7 @@ class BookingView(APIView):
 
 
 class RoomsFilterDateView(APIView):
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         rooms = Rooms.objects.all()
@@ -128,6 +130,7 @@ class RoomsFilterDateView(APIView):
 
 
 class MyBookingsView(APIView):
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         agent_name = request.user.username
