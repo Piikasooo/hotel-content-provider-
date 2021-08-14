@@ -6,38 +6,38 @@ CreateCoefficient
 
 {% load crispy_forms_tags %}
 
+{% block page_name %}
+Coefficients of <em>{{ hotel.hotel_name }}</em>
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
+
 {% block content %}
 
-<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
-                 CreateCoefficient User - {{ user.username }}
-        </a>
-        <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
-</nav>
+<div class="container">
+  <div class="row">
+    <div class="col">
 
-    <hr>
-    <hr>
-    <hr>
-
-
-{% if coefficients %}
-
-<div class="px-4 py-1 my-5 text-center">
-    <h1 class="display-6 fw-bold">Coefficients in {{ hotel.hotel_name }}</h1>
-</div>
-
-
-<div class="my-3 p-4 bg-body rounded shadow">
+      {% if coefficients %}
   <form action="" method="post">
     {% csrf_token %}
-
+<nav class="navbar navbar-light bg-light">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1"> Available Coefficients </span>
+  </div>
+</nav>
 <table class="table">
   <thead>
     <tr>
       <th scope="col">Start date</th>
       <th scope="col">End date</th>
       <th scope="col">Coefficient</th>
-        <th scope="col">Action</th>
+        <th scope="col"> Action</th>
     </tr>
   </thead>
   <tbody>
@@ -46,33 +46,40 @@ CreateCoefficient
       <td>{{ coefficient.start_date }}</td>
       <td>{{ coefficient.end_date }}</td>
       <td>{{ coefficient.coefficient }}</td>
-        <td><button name="id" type="submit" class="btn btn-danger" value="{{ coefficient.id }}">Delete</button></td>
-
+        <td><a href="{% url 'coef_update' hotel.url coefficient.id %}" class="btn btn-success">Details</a></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
   </form>
 
-  </div>
       {% endif %}
+    </div>
 
+    <div class="col">
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">Add New Coefficient </span>
+            </div>
+        </nav>
 
-<div class="my-3 p-4 bg-body rounded shadow">
-<div class="px-4 py-1 my-1 text-center">
-        <h4 class="fw-bold">Create new coefficient</h4>
-
-      <hr>
-
-  <form action="" method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="submit" class="btn btn-primary" value="Add coefficient">
-  </form>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-success" value="Add Coefficient">
+        </form>
     </div>
   </div>
+</div>
 
+<hr>
 
-
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 {% endblock %}

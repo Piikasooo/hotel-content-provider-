@@ -50,11 +50,14 @@ class BookingView(APIView):
         room_num = int(request.data.get("room_number"))
         hotel = Hotel.objects.get(hotel_name=request.data.get("hotel"))
         room = Rooms.objects.get(room_number=room_num, hotel=hotel)
-
-        if not Rooms.objects.filter(
-                     Q(hotel=hotel), Q(room_number=room.room_number),
-                     Q(bookings__checkin__gt=end_date) | Q(bookings__checkout__lt=start_date)
-        ).exists():
+# проврка на существование
+        if Rooms.objects.filter(
+             Q(bookings__booking_stat=True)
+             & (
+                 (Q(bookings__checkin__lt=end_date) & Q(bookings__checkout__gte=end_date))
+                 | (Q(bookings__checkin__lte=start_date) & Q(bookings__checkout__gt=start_date))
+             )
+         ).exists():
             return Response('Not created, Booking is exist', status=status.HTTP_400_BAD_REQUEST)
 
         room = final_price(room=room, start_date=start_date, end_date=end_date, request=request)
@@ -65,7 +68,10 @@ class BookingView(APIView):
                            checkin=start_date,
                            checkout=end_date,
                            rate_price=room.room_price,
-                           room=room)
+                           room=room,
+                           room_number=room.room_number,
+                           hotel=hotel.hotel_name
+                           )
         booking.save()
         return Response('Successfully created', status=status.HTTP_201_CREATED)
 
@@ -82,7 +88,7 @@ class RoomsFilterDateView(APIView):
          start_date, end_date = str_to_date(request)
 
          free_rooms = list(Rooms.objects.exclude(
-             Q(bookings__booking_stat=False)
+             Q(bookings__booking_stat=True)
              & (
                  (Q(bookings__checkin__lt=end_date) & Q(bookings__checkout__gte=end_date))
                  | (Q(bookings__checkin__lte=start_date) & Q(bookings__checkout__gt=start_date))

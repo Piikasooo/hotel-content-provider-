@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}
+HomePage
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block page_name %}
+Home Page
+{% endblock %}
+
+{% block buttons %}
+    <a href="{% url 'add_hotel' %}" class="btn btn-outline-light me-2">Add New Hotel</a>
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+    {% endblock %}
+
+{% block content %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-success">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<div class="my-3 p-3 bg-white rounded box-shadow">
+    <h3 class="border-bottom border-gray pb-2 mb-0"> The Hotels List </h3>
+
+    <hr>
+
+<div class="row gy-5">
+
+    {% for hotel in hotels %}
+
+    <div class="col-md-8">
+        <div class="card mb-3" style="max-width: 1000px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ hotel.hotel_name }}</h5>
+                        <hr>
+                        <p class="card-text">{{ hotel.hotel_description }}</p>
+                        <a href="{% url 'hotel_detail' hotel.url %}" class="btn btn-primary">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</div>
+<hr>
+
+
+{% endblock %}
