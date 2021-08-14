@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Hotel, RoomTypes, Amenity, Coefficient, Rooms
+from .models import Hotel, RoomTypes, Amenity, Coefficient, Rooms, HotelsImages
 from datetime import date
 
 
 class CreateAmenityForm(forms.ModelForm):
-
     amenity_name = forms.CharField(max_length=200)
     amenity_price = forms.DecimalField(max_digits=7, decimal_places=2)
 
@@ -56,7 +56,6 @@ class CreateCoefficientForm(forms.ModelForm):
 
 
 class CreateRoomForm(forms.ModelForm):
-
     hotel = forms.CharField(max_length=120)
     room_type = forms.CharField(max_length=120)
     room_number = forms.IntegerField()
@@ -67,11 +66,18 @@ class CreateRoomForm(forms.ModelForm):
         self.fields['room_type'].label = 'Введите тип комнаты'
         self.fields['room_number'].label = 'Введите номер комнаты'
 
-    def clean_roomtype(self):
-        room_type = self.cleaned_data['room_type']
-        if not RoomTypes.objects.filter(room_type_name=room_type).exists():
-            raise forms.ValidationError(f'Тип комнаты с даным названием "{room_type}" не найден в системе')
-        return self.room_type
+    def clean_end_date(self):
+        start_date = self.cleaned_data['start_date']
+        end_date = self.cleaned_data['end_date']
+        if start_date > end_date:
+            raise forms.ValidationError(f'Конечная дата выбрана некоректно')
+        return start_date
+
+    def clean(self):
+        coefficient = self.cleaned_data['coefficient']
+        if coefficient < 0:
+            raise forms.ValidationError(f'Коефицент введен неверно')
+        return self.cleaned_data
 
     class Meta:
         model = Rooms
@@ -79,7 +85,6 @@ class CreateRoomForm(forms.ModelForm):
 
 
 class DeleteForm(forms.ModelForm):
-
     hotelname = forms.CharField(max_length=200)
 
     def __init__(self, *args, **kwargs):
@@ -89,7 +94,7 @@ class DeleteForm(forms.ModelForm):
     def clean(self):
         hotelname = self.cleaned_data['hotelname']
 
-    # фильтровать только отели самого админа
+        # фильтровать только отели самого админа
         if not Hotel.objects.filter(hotel_name=hotelname).exists():
             raise forms.ValidationError(f'Отель с даным названием "{hotelname}" не найден в системе')
         return self.cleaned_data
@@ -100,7 +105,6 @@ class DeleteForm(forms.ModelForm):
 
 
 class LoginForm(forms.ModelForm):
-
     password = forms.CharField(widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
@@ -125,7 +129,6 @@ class LoginForm(forms.ModelForm):
 
 
 class RegistrationForm(forms.ModelForm):
-
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     password = forms.CharField(widget=forms.PasswordInput)
     phone = forms.CharField(required=False)
@@ -172,20 +175,16 @@ class RegistrationForm(forms.ModelForm):
 
 
 class AddHotelForm(forms.ModelForm):
-    hotel_name = forms.CharField(required=True)
-    hotel_long = forms.DecimalField(max_digits=9, decimal_places=6, required=True)
-    hotel_lat = forms.DecimalField(max_digits=9, decimal_places=6, required=True)
-    hotel_email = forms.EmailField(required=True)
-    hotel_url = forms.URLField(required=True)
+    hotel_name = forms.CharField(required=True, label='Название')
+    hotel_long = forms.DecimalField(max_digits=9, decimal_places=6, required=True, label='Долгота')
+    hotel_lat = forms.DecimalField(max_digits=9, decimal_places=6, required=True, label='Широта')
+    hotel_email = forms.EmailField(required=True, label='Электронная почта')
+    hotel_url = forms.URLField(required=True, label='Сайт')
     hotel_description = forms.TextInput()
+    hotel_image = forms.ImageField(label='Фото')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['hotel_name'].label = 'Название'
-        self.fields['hotel_long'].label = 'Долгота'
-        self.fields['hotel_lat'].label = 'Широта'
-        self.fields['hotel_email'].label = 'Электронная почта'
-        self.fields['hotel_url'].label = 'Сайт'
         self.fields['hotel_description'].label = 'Описание'
 
     def clean(self):
@@ -207,27 +206,30 @@ class AddHotelForm(forms.ModelForm):
 
     class Meta:
         model = Hotel
-        fields = ['hotel_name', 'hotel_long', 'hotel_lat', 'hotel_email', 'hotel_url', 'hotel_description']
+        fields = ['hotel_name', 'hotel_long', 'hotel_lat', 'hotel_email',
+                  'hotel_url', 'hotel_description', 'hotel_image']
 
 
 class AddRoomTypeForm(forms.ModelForm):
-
     room_type_name = forms.CharField(max_length=200, required=True)
     room_type_description = forms.CharField(max_length=200, required=True)
     room_type_price = forms.DecimalField(max_digits=6, decimal_places=2, required=True)
+    hotel_field = ''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, hotel, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['room_type_name'].label = 'Введите название для типа комнаты'
         self.fields['room_type_description'].label = 'Введите описание для даного типа комнаты'
         self.fields['room_type_price'].label = 'Введите цену даного типа комнаты'
+        self.hotel_field = hotel
 
     def clean(self):
         room_type_name = self.cleaned_data.get('room_type_name')
         room_type_description = self.cleaned_data.get('room_type_description')
         room_type_price = self.cleaned_data.get('room_type_price')
+        hotel = Hotel.objects.get(hotel_url=self.hotel_field)
 
-        if RoomTypes.objects.filter(room_type_name=room_type_name).exists():
+        if RoomTypes.objects.filter(room_type_name=room_type_name, hotel=hotel).exists():
             raise forms.ValidationError(f'Room type with a name {room_type_name}  already exists!')
 
         return self.cleaned_data
@@ -235,3 +237,18 @@ class AddRoomTypeForm(forms.ModelForm):
     class Meta:
         model = RoomTypes
         fields = ['room_type_name', 'room_type_description', 'room_type_price']
+
+
+class AddHotelImagesForm(forms.ModelForm):
+    hotel_photo = forms.ImageField(label='Photo', required=True)
+    photo_description = forms.CharField(max_length=50, required=True)
+
+    hotel_field = ''
+
+    def __init__(self, hotel, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hotel_field = hotel
+
+    class Meta:
+        model = HotelsImages
+        fields = ['hotel_photo', 'photo_description']
