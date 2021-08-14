@@ -6,26 +6,54 @@ HotelDetail
 
 {% load crispy_forms_tags %}
 
+{% block page_name %}
+ <em>{{ hotel.hotel_name }}</em> Hotel Details
+{% endblock %}
+
+{% block buttons %}
+    <a href="{% url 'rooms' hotel.url %}" class="btn btn-outline-light me-2">Rooms</a>
+    <a href="{% url 'amenity' hotel.url%}" class="btn btn-outline-light me-2">Amenities</a>
+    <a href="{% url 'add_room_type' hotel.url%}" class="btn btn-outline-light me-2">Room Types</a>
+    <a href="{% url 'coefficient' hotel.url%}" class="btn btn-outline-light me-2" >Coefficients</a>
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end" method="post">
+         {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger me-3">Delete Hotel</button>
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
 
 {% block content %}
 
-<div>{{ hotel.hotel_name }}</div>
+
+<div class="p-3  ">
 
 
+<div class="my-3 p-4 bg-body rounded shadow">
 
+    <div class="px-4 py-1 my-1 text-center">
 
-<div>
-    <form method="post">
-        {% csrf_token %}
-       <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
+        <h4 class="fw-bold">{{ hotel.hotel_name }}</h4>
+        <hr>
+ <div class="row align-items-start">
+    <div class="col">
+      <p class="card-text">{{ hotel.hotel_description }}</p>
+    </div>
+    <div class="col">
+        <p class="card-text">Email: {{ hotel.hotel_email }}</p>
+        <p class="card-text">Site: <a href="{{hotel.hotel_url}}">{{ hotel.hotel_url }}</a></p>
+        <p class="card-text">Long: {{ hotel.hotel_long }}, Lat: {{ hotel.hotel_lat }}</p>
+    </div>
+        </div>
+        <a href="{% url 'hotel_update' hotel.url %}" class="btn btn-primary">Update Information</a>
+
+    </div>
 </div>
 
-
-<a href="{% url 'rooms' hotel.url %}" class="btn btn-info" >Rooms</a>
-<a href="{% url 'amenities' hotel.url%}" class="btn btn-primary " >Amenities</a>
-<a href="{% url 'coefficient' hotel.url%}" class="btn btn-info" >Coefficient</a>
-
+</div>
 
 
 {% endblock %}
