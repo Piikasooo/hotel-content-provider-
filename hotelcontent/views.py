@@ -10,7 +10,6 @@ from .forms import CreateAmenityForm, CreateRoomForm, LoginForm, RegistrationFor
     AddRoomTypeForm
 from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity
 from .models import Admin, Hotel, Rooms
-from django.db.models import Q
 
 
 class LoginView(View):
@@ -87,8 +86,7 @@ class HomePageView(View):
 
         form = DeleteForm(request.POST or None)
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotels = Hotel.objects.filter(admin=user)
         context = {
@@ -108,8 +106,7 @@ class CreateRoom(View):
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotel = Hotel.objects.get(admin=user, url=slug)
         amenities = Amenity.objects.filter(hotel=hotel)
@@ -120,11 +117,9 @@ class CreateRoom(View):
 
     def post(self, request, slug):
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         amenities = request.POST.getlist('amenity')
-        print(amenities)
         hotel = Hotel.objects.get(admin=user, url=slug)
 
         if len(amenities) == 0:
@@ -135,7 +130,8 @@ class CreateRoom(View):
 
         total = 0
         for amenity in amenities:
-            am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)
+            amenity_name = amenity.split('/')[0]
+            am = Amenity.objects.get(hotel=hotel, amenity_name=amenity_name)
             total = total + am.amenity_price
 
         room_number = request.POST.get('room_number')
@@ -149,14 +145,14 @@ class CreateRoom(View):
                 return HttpResponseRedirect(route)
 
         room_type = request.POST.get('dropdown')
-
         if str(room_type) == 'Select type room':
             alert = 'Select type room'
             messages.info(request, alert)
             route = '/add_room/{0}/'.format(hotel.url)
             return HttpResponseRedirect(route)
 
-        room_type = RoomTypes.objects.get(room_type_name=room_type, hotel=hotel)
+        room_type_name = room_type.split('/')[0]
+        room_type = RoomTypes.objects.get(room_type_name=room_type_name, hotel=hotel)
         try:
             room_rate_price = room_type.room_type_price + total
             room = Rooms(room_number=room_number, room_type=room_type, hotel=hotel, room_rate_price=room_rate_price)
@@ -167,32 +163,18 @@ class CreateRoom(View):
             return HttpResponseRedirect('/homepage/')
 
         for amenity in amenities:
-            am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)
+            amenity_name = amenity.split('/')[0]
+            am = Amenity.objects.get(hotel=hotel, amenity_name=amenity_name)
             rate_amenity = RateAmenity(room=room, amenity=am)
             rate_amenity.save()
-
         alert = 'Successfully created new room'
         messages.info(request, alert)
         return HttpResponseRedirect('/homepage/')
 
 
 class AddHotelView(View):
-
-    def get(self, request):
-
-        if not authentication(request):
-            alert = 'NOT LOGIN'
-            messages.info(request, alert)
-            return HttpResponseRedirect('/login/')
-
-        form = AddHotelForm(request.POST or None)
-        context = {'form': form}
-        return render(request, 'add_hotel.html', context)
-
-    def post(self, request):
-        form = AddHotelForm(request.POST or None)
-        user = request.session['data']
-        user = User.objects.get(username=user)
+    @classmethod
+    def _create_hotel(cls, form, user):
         if form.is_valid():
             new_hotel = form.save(commit=False)
             new_hotel.hotel_name = form.cleaned_data['hotel_name']
@@ -210,7 +192,23 @@ class AddHotelView(View):
             url = hotelname + 'Hotel'
             new_hotel.url = url
             new_hotel.save()
+            return new_hotel
 
+    def get(self, request):
+
+        if not authentication(request):
+            alert = 'NOT LOGIN'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
+
+        form = AddHotelForm(request.POST or None)
+        context = {'form': form}
+        return render(request, 'add_hotel.html', context)
+
+    def post(self, request):
+        form = AddHotelForm(request.POST or None)
+        user = request.user
+        if self._create_hotel(form, user):
             return HttpResponseRedirect('/homepage/')
         context = {'form': form}
         return render(request, 'add_hotel.html', context)
@@ -264,13 +262,9 @@ class CreateAmenityView(View):
         user = User.objects.get(username=user)
 
         if form.is_valid():
-
             hotel = Hotel.objects.get(url=slug, admin=user)
-
             amenity = form.save(commit=False)
-
             amenity_name = form.cleaned_data['amenity_name']
-
             if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
                 alert = 'This amenity name exist'
                 messages.info(request, alert)
@@ -280,7 +274,6 @@ class CreateAmenityView(View):
             amenity.amenity_price = form.cleaned_data['amenity_price']
             amenity.hotel = hotel
             amenity.save()
-
             alert = 'Successfully created new amenity'
             messages.info(request, alert)
             return HttpResponseRedirect('/amenity/' + hotel.url + '/')
@@ -297,8 +290,7 @@ class CreateCoefficientView(View):
             return HttpResponseRedirect('/login/')
 
         form = CreateCoefficientForm(request.POST or None)
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotel = Hotel.objects.get(url=slug, admin=user)
 
@@ -308,9 +300,7 @@ class CreateCoefficientView(View):
 
     def post(self, request, slug):
         form = CreateCoefficientForm(request.POST or None)
-        user = request.session['data']
-        user = User.objects.get(username=user)
-
+        user = request.user
         hotel = Hotel.objects.get(url=slug, admin=user)
 
         if form.is_valid():
@@ -331,14 +321,12 @@ class CreateCoefficientView(View):
 class RoomsView(View):
 
     def get(self, request, slug):
-
         if not authentication(request):
             alert = 'NOT LOGIN'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
         hotel = Hotel.objects.get(url=slug)
         rooms = Rooms.objects.filter(hotel=hotel)
         context = {
@@ -360,8 +348,7 @@ class AddRoomTypeView(View):
 
         form = AddRoomTypeForm(request.POST or None)
 
-        user = request.session['data']
-        user = User.objects.get(username=user)
+        user = request.user
 
         hotel = Hotel.objects.get(url=slug)
         room_type = RoomTypes.objects.filter(hotel=hotel)
@@ -375,9 +362,7 @@ class AddRoomTypeView(View):
 
     def post(self, request, slug):
         form = AddRoomTypeForm(request.POST or None)
-        user = request.session['data']
-
-        user = User.objects.get(username=user)
+        user = request.user
 
         if form.is_valid():
             hotel = Hotel.objects.get(url=slug, admin=user)
