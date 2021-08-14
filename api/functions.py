@@ -6,12 +6,23 @@ from .currency import convert_currency
 
 def str_to_date(request):
     start_date = request.data.get("start_date")
+    end_date = request.data.get("end_date")
+
+    # check that start_date end_date fields not empty
+    if start_date == '' or end_date == '':
+        start_date, end_date = 'error', 'error'
+        return start_date, end_date
+
     start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
     start_date = start_date.date()
 
-    end_date = request.data.get("end_date")
     end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
     end_date = end_date.date()
+
+    # check that start_date end_date correct
+    today = datetime.datetime.today().date()
+    if start_date < today or end_date <= today:
+        start_date, end_date = 'incorrect date', 'error'
     return start_date, end_date
 
 

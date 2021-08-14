@@ -99,11 +99,20 @@ class BookingView(APIView):
         agent1 = AgentReservation.objects.get(agent=agent)
 
         start_date, end_date = str_to_date(request)
+
+        # if start_date or end_date is empty then str_to_date function return error
+        if start_date == 'error':
+            return Response('start_date and end_date must be not Empty', status=status.HTTP_400_BAD_REQUEST)
+        if start_date == 'incorrect date':
+            return Response('Incorrect start_date or end_date', status=status.HTTP_400_BAD_REQUEST)
+
         room_num = int(request.data.get("room_number"))
         hotel = Hotel.objects.get(hotel_name=request.data.get("hotel"))
         room = Rooms.objects.get(room_number=room_num, hotel=hotel)
 # проврка на существование
         if Rooms.objects.filter(
+             Q(id=room.id)
+             &
              Q(bookings__booking_stat=True)
              & (
                  (Q(bookings__checkin__lt=end_date) & Q(bookings__checkout__gte=end_date))
