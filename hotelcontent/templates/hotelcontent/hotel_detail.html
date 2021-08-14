@@ -15,6 +15,7 @@ HotelDetail
     <a href="{% url 'amenity' hotel.url%}" class="btn btn-outline-light me-2">Amenities</a>
     <a href="{% url 'add_room_type' hotel.url%}" class="btn btn-outline-light me-2">Room Types</a>
     <a href="{% url 'coefficient' hotel.url%}" class="btn btn-outline-light me-2" >Coefficients</a>
+    <a href="{% url 'add_hotel_image' hotel.url%}" class="btn btn-outline-light me-2" >Add Photo</a>
 {% endblock %}
 
 {% block end %}
@@ -39,15 +40,49 @@ HotelDetail
         <h4 class="fw-bold">{{ hotel.hotel_name }}</h4>
         <hr>
  <div class="row align-items-start">
-    <div class="col">
-      <p class="card-text">{{ hotel.hotel_description }}</p>
+    <div class="col-md-6">
+        <div class="container-fluid">
+<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+        <img src="{{ hotel.hotel_image.url }}" class="d-block w-100">
+
+    </div>
+      {% for image in photos %}
+    <div class="carousel-item">
+      <img src="{{ image.hotel_photo.url }}" class="d-block w-100">
+      <div class="carousel-caption d-none d-md-block">
+        <p>{{ image.photo_description }}</p>
+      </div>
+    </div>
+      {% endfor %}
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+</div>
+
     </div>
     <div class="col">
-        <p class="card-text">Email: {{ hotel.hotel_email }}</p>
-        <p class="card-text">Site: <a href="{{hotel.hotel_url}}">{{ hotel.hotel_url }}</a></p>
-        <p class="card-text">Long: {{ hotel.hotel_long }}, Lat: {{ hotel.hotel_lat }}</p>
+        <div class="row align-items-start">
+            <div class="invisible"><hr></div>
+            <p class="card-text">{{ hotel.hotel_description }}</p>
+            <div class="invisible"><hr></div>
+            <p class="card-text">Email: {{ hotel.hotel_email }}</p>
+            <p class="card-text">Site: <a href="{{hotel.hotel_url}}">{{ hotel.hotel_url }}</a></p>
+            <p class="card-text">Long: {{ hotel.hotel_long }}, Lat: {{ hotel.hotel_lat }}</p>
+        </div>
     </div>
         </div>
+         <div class="row align-items-start">
+         </div>
+        <hr>
         <a href="{% url 'hotel_update' hotel.url %}" class="btn btn-primary">Update Information</a>
 
     </div>
