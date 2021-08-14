@@ -88,14 +88,18 @@ class BookingStatus(models.Model):
 class Bookings(models.Model):
     agent_reservation = models.ForeignKey(AgentReservation, on_delete=models.CASCADE)
     booking_stat = models.BooleanField(default=False)
-    hotels = models.ForeignKey(Hotel, on_delete=models.CASCADE, default=0)
+    hotels = models.ForeignKey(Hotel, on_delete=models.SET_NULL, null=True)
     checkin = models.DateField()
     checkout = models.DateField()
     rate_price = models.DecimalField(max_digits=7, decimal_places=2, default=0)
-    room = models.ForeignKey(Rooms, on_delete=models.CASCADE, default=0)
+    room = models.ForeignKey(Rooms, on_delete=models.SET_NULL, null=True)
+
+    # reserve field
+    room_number = models.IntegerField(blank=True)
+    hotel = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
-        return '{}/{}'.format(self.agent_reservation, self.hotels, self.checkin, self.checkout, self.rate_price)
+        return '{}/{}'.format(self.agent_reservation, self.hotels, self.room_number, self.checkin, self.checkout, self.rate_price)
 
 
 class Coefficient(models.Model):

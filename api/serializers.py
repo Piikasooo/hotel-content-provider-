@@ -5,7 +5,7 @@ from hotelcontent.models import Hotel, Rooms, Bookings
 class HotelsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
-        fields = ['hotel_name', 'hotel_email', 'hotel_url', 'hotel_description']
+        fields = ['hotel_name', 'hotel_email', 'hotel_url']
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rooms
-        fields = ['hotel', 'room_number', 'room_type', 'room_rate_price', 'amenities']
+        fields = ['hotel', 'room_number', 'room_type', 'amenities']
 
 
 class RoomFilterSerializer(serializers.ModelSerializer):
@@ -25,14 +25,11 @@ class RoomFilterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rooms
-        fields = ['hotel', 'room_number', 'room_type', 'amenities', 'room_rate_price']
+        fields = ['hotel', 'room_number', 'room_type', 'amenities', 'room_price']
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    booking_status = serializers.CharField()
-    hotels = serializers.CharField()
-    room = serializers.CharField()
 
     class Meta:
         model = Bookings
-        fields = ['hotels', 'room', 'checkin', 'checkout', 'rate_price']
+        fields = ['hotel', 'room_number', 'checkin', 'checkout', 'rate_price']

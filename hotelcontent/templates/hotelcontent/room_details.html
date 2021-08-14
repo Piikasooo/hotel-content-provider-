@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}
+RoomsPage
+{% endblock %}
+
+{% block page_name %}
+Rooms <em>{{ hotel.hotel_name }}</em>
+{% endblock %}
+
+{% block buttons %}
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="p-3  ">
+
+
+<div class="my-3 p-4 bg-body rounded shadow">
+
+    <div class="px-4 py-1 my-1 text-center">
+
+        <h4 class="fw-bold">Room №{{ room.room_number }}</h4>
+        <hr>
+ <div class="row align-items-start">
+    <div class="col">
+        <p class="card-text">TypeRoom: {{ room_type.room_type_name }}</p>
+        <p class="card-text">Description: {{ room_type.room_type_description }}</p>
+        <p class="card-text">Price TypeRoom: {{ room_type.room_type_price }}</p>
+    </div>
+    <div class="col">
+
+            <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Amenity Name</th>
+      <th scope="col">Price</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {% for amenity in amenities %}
+    <tr>
+      <td>{{ amenity.amenity.amenity_name }}</td>
+      <td>{{ amenity.amenity.amenity_price }}</td>
+
+    </tr>
+    {% endfor %}
+
+  </tbody>
+  </table>
+    </div>
+        </div>
+
+        <hr>
+        <p class="card-text">Total Price: {{ room.room_rate_price}}</p>
+    <a href="{% url 'rate_update' hotel.url room.room_number %}" class="btn btn-success">Update rate</a>
+
+    </div>
+</div>
+
+</div>
+
+
+
+{% endblock %}
