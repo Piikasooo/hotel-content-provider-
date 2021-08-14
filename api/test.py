@@ -47,6 +47,7 @@ class HotelsViewTest(TestCase):
         valid_data = {
             'lat': 44,
             'long': 44,
+            'rad': 10,
         }
         response = self.client.post(f'/api/v1/hotels/',
                                     data=json.dumps(valid_data),

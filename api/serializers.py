@@ -1,11 +1,13 @@
 from rest_framework import serializers
-from hotelcontent.models import Hotel, Rooms, Bookings
+from hotelcontent.models import Hotel, Rooms, Bookings, HotelsImages
 
 
 class HotelsSerializer(serializers.ModelSerializer):
+    hotel = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Hotel
-        fields = ['hotel_name', 'hotel_email', 'hotel_url']
+        fields = ['hotel_name', 'hotel_email', 'hotel_url', 'hotel_description', 'hotel_lat', 'hotel_long', 'hotel_image', 'hotel' ]
 
 
 class RoomSerializer(serializers.ModelSerializer):
