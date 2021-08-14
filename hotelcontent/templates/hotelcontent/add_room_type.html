@@ -23,33 +23,34 @@ CreateRoomType
   <div class="row">
     <div class="col">
       {% if room_type %}
-<nav class="navbar navbar-light bg-light">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1"> Available Room Types </span>
-  </div>
-</nav>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">Room Type name</th>
-      <th scope="col">Room Type price</th>
-        <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for roomtype in room_type %}
-    <tr>
-      <td>{{ roomtype.room_type_name }}</td>
-      <td>{{ roomtype.room_type_price }}</td>
-        <td><a href="{% url 'type_room_update' hotel.url  roomtype.room_type_name %}" class="btn btn-success">Details</a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% endif %}
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1"> Available Room Types </span>
+            </div>
+        </nav>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                <th scope="col">Room Type name</th>
+                <th scope="col">Room Type price</th>
+                <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for roomtype in room_type %}
+                <tr>
+                <td>{{ roomtype.room_type_name }}</td>
+                <td>{{ roomtype.room_type_price }}</td>
+                <td><a href="{% url 'type_room_update' hotel.url  roomtype.room_type_name %}" class="btn btn-success">Details</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
     </div>
 
     <div class="col">
+
         <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
                 <span class="navbar-brand mb-0 h1">Add New Room Type </span>
@@ -61,19 +62,18 @@ CreateRoomType
             {{ form|crispy }}
             <input type="submit" class="btn btn-success" value="Add Room Type">
         </form>
+
     </div>
   </div>
 </div>
 
 <hr>
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li><h3 class="text-danger">{{ message }}</h3></li>
-    {% endfor %}
-</ul>
-{% endif %}
-
-
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li><h3 class="text-danger">{{ message }}</h3></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
 {% endblock %}
