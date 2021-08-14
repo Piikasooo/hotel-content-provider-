@@ -1,9 +1,10 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
-from .forms import LoginForm, RegistrationForm, DeleteForm, CreateCoefficientForm, AddHotelForm, CreateAmenityForm
+from .forms import LoginForm, RegistrationForm, DeleteForm, CreateCoefficientForm, AddHotelForm, CreateAmenityForm, \
+    AddHotelImagesForm
 from django.contrib.auth import authenticate, login
-from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, Coefficient
+from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, Coefficient, HotelsImages
 from django.contrib.auth.models import User
 from django.contrib import messages
 
@@ -111,6 +112,7 @@ class CreateRoom(View):
         user = User.objects.get(username=user)
 
         amenities = request.POST.getlist('amenity')
+        print(amenities)
         hotel = Hotel.objects.get(admin=user, url=slug)
 
         if len(amenities) == 0:
@@ -121,9 +123,10 @@ class CreateRoom(View):
             messages.info(request, alert)
             return render(request, "createroom.html", context)
 
+        total = 0
         for amenity in amenities:
             am = Amenity.objects.get(hotel=hotel, amenity_name=amenity)
-            total =+ am.amenity_price
+            total = total + am.amenity_price
 
         room_number = request.POST.get('room_number')
         allrooms = Rooms.objects.filter(hotel=hotel)
@@ -171,7 +174,7 @@ class AddHotelView(View):
         return render(request, 'add_hotel.html', context)
 
     def post(self, request, *args, **kwargs):
-        form = AddHotelForm(request.POST or None)
+        form = AddHotelForm(request.POST, request.FILES)
         user = request.session['data']
         user = User.objects.get(username=user)
         if form.is_valid():
@@ -183,6 +186,7 @@ class AddHotelView(View):
             new_hotel.hotel_url = form.cleaned_data['hotel_url']
             new_hotel.admin = user
             new_hotel.hotel_description = form.cleaned_data['hotel_description']
+            new_hotel.hotel_image = form.cleaned_data['hotel_image']
 
             hotelname = form.cleaned_data['hotel_name']
             hotelname = hotelname.split()
@@ -201,8 +205,8 @@ class HotelDetailView(View):
 
     def get(self, request, slug):
         hotel = Hotel.objects.get(url=slug)
-        amenities = Amenity.objects.filter(hotel=hotel)
-        context = {"hotel": hotel, "amenities": amenities}
+        images = HotelsImages.objects.filter(hotel=hotel)
+        context = {'hotel': hotel, 'photos': images}
         return render(request, "hotel_detail.html", context)
 
     def post(self, request, slug):
@@ -359,8 +363,70 @@ class RoomDetailView(View):
     def get(self, request, slug, room_number):
         hotel = Hotel.objects.get(url=slug)
         room = Rooms.objects.get(hotel=hotel, room_number=room_number)
+        room_type = RoomTypes.objects.get(id=room.room_type.id)
+        amenities = RateAmenity.objects.filter(room=room)
         context = {
             "hotel": hotel,
-            "room": room
+            "room": room,
+            "room_type": room_type,
+            "amenities": amenities,
         }
         return render(request, "room_details.html", context)
+
+
+class HotelUpdateView(View):
+
+    def get(self, request, slug):
+        hotel = Hotel.objects.get(url=slug)
+        context = {"hotel": hotel}
+        return render(request, "hotel_update.html", context)
+
+    def post(self, request, slug):
+        hotel = Hotel.objects.get(url=slug)
+
+        hotel.hotel_name = request.POST.get('name')
+        hotel.hotel_long = float(request.POST.get('long'))
+        hotel.hotel_lat = float(request.POST.get('lat'))
+        hotel.hotel_email = request.POST.get('email')
+        hotel.hotel_url = request.POST.get('url')
+        hotel.hotel_description = request.POST.get('description')
+
+        hotel.save()
+        alert = 'Successfully update Hotel'
+        messages.info(request, alert)
+        return HttpResponseRedirect('/homepage/')
+
+
+class AddHotelImage(View):
+    def get(self, request, slug):
+
+        user = request.session['data']
+        user = User.objects.get(username=user)
+
+        hotel = Hotel.objects.get(url=slug)
+        form = AddHotelImagesForm(hotel.hotel_url, request.POST or None)
+
+        context = {
+            'user': user,
+            'hotel': hotel,
+            'form': form,
+        }
+        return render(request, "add_photos.html", context)
+
+    def post(self, request, slug):
+        user = request.session['data']
+        user = User.objects.get(username=user)
+        hotel = Hotel.objects.get(url=slug, admin=user)
+        form = AddHotelImagesForm(hotel.hotel_url, request.POST, request.FILES)
+
+        if form.is_valid():
+            hotel_image = form.save(commit=False)
+            hotel_image.hotel_photo = form.cleaned_data['hotel_photo']
+            hotel_image.photo_description = form.cleaned_data['photo_description']
+            hotel_image.hotel = hotel
+            hotel_image.save()
+
+            return HttpResponseRedirect('/add_hotel_image/' + hotel.url + '/')
+
+        context = {'user': user, 'hotel': hotel, 'form': form}
+        return render(request, "add_photos.html", context)
