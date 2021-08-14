@@ -10,7 +10,6 @@ cryptography==3.4.7
 defusedxml==0.7.1
 Django==3.2.5
 django-crispy-forms==1.12.0
-django-earthdistance==1.1.0
 django-templated-mail==1.1.1
 djangorestframework==3.12.4
 djangorestframework-simplejwt==4.7.2
