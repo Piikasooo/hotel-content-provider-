@@ -33,34 +33,37 @@ Create New Room
 
 {% endif %}
 
-<form method="post" class="ckeck">
+<form method="post" class="ckeck" enctype="multipart/form-data">
   {% csrf_token %}
 
     <div class="mb-3">
-        <label class="form-label"><h5>Название отеля</h5></label>
+        <label class="form-label"><h5>Hotel name</h5></label>
         <input type="text" class="form-control" name="name" placeholder="{{ hotel.hotel_name }}" value="{{ hotel.hotel_name }}">
     </div>
      <div class="mb-3">
-        <label class="form-label"><h5>Долгота</h5></label>
+        <label class="form-label"><h5>Longitude</h5></label>
         <input type="text" class="form-control" name="long" placeholder="{{ hotel.hotel_long }}" value="{{ hotel.hotel_long }}">
     </div>
      <div class="mb-3">
-        <label class="form-label"><h5>Широта</h5></label>
+        <label class="form-label"><h5>Latitude</h5></label>
         <input type="text" class="form-control" name="lat" placeholder="{{ hotel.hotel_lat }}" value="{{ hotel.hotel_lat }}">
     </div>
      <div class="mb-3">
-        <label class="form-label"><h5>Электронная почта</h5></label>
+        <label class="form-label"><h5>Email</h5></label>
         <input type="text" class="form-control" name="email" placeholder="{{ hotel.hotel_email }}" value="{{ hotel.hotel_email }}">
     </div>
      <div class="mb-3">
-        <label class="form-label"><h5>Сайт</h5></label>
+        <label class="form-label"><h5>Site</h5></label>
         <input type="text" class="form-control" name="url" placeholder="{{ hotel.hotel_url }}" value="{{ hotel.hotel_url }}">
     </div>
      <div class="mb-3">
-        <label class="form-label"><h5>Описание</h5></label>
+        <label class="form-label"><h5>Hotel description</h5></label>
         <input type="text" class="form-control" name="description" placeholder="{{ hotel.hotel_description }}" value="{{ hotel.hotel_description }}">
     </div>
-
+    <div class="mb-3">
+        <label class="form-label"><h5>Photo</h5></label>
+        <input type="file" class="form-control" name="img" placeholder="{{ hotel.hotel_image }}" value="{{ hotel.hotel_image }}">
+    </div>
 
     <hr>
 

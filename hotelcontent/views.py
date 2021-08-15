@@ -1,19 +1,14 @@
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
-from .forms import LoginForm, RegistrationForm, DeleteForm, CreateCoefficientForm, AddHotelForm, CreateAmenityForm, \
-    AddHotelImagesForm
-from django.contrib.auth import authenticate, login
-from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, Coefficient, HotelsImages
-from .forms import LoginForm, RegistrationForm, DeleteForm, CreateCoefficientForm, AddHotelForm, CreateAmenityForm
-from django.contrib.auth import authenticate, login, logout
-from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, Coefficient, Bookings
-from django.contrib.auth.models import User
-from django.contrib import messages
-from .forms import CreateAmenityForm, CreateRoomForm, LoginForm, RegistrationForm, DeleteForm, AddHotelForm, \
-    AddRoomTypeForm
-from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity
-from .models import Admin, Hotel, Rooms
+
+from .forms import LoginForm, RegistrationForm, DeleteForm, CreateCoefficientForm, AddHotelForm, AddHotelImagesForm, \
+    CreateAmenityForm, AddRoomTypeForm
+from .models import Admin, Hotel, Amenity, RoomTypes, Rooms, RateAmenity, HotelsImages
+from .models import Coefficient, Bookings
 
 
 class LoginView(View):
@@ -73,18 +68,12 @@ class RegistrationView(View):
         return render(request, 'registration.html', context)
 
 
-###########################################################z
-'''главная страница, где отображаются уже 
-зарегистрированные им отели со следующим описанием - (название отеля, координаты отеля) 
-и две кнопки возле каждого отеля Delete, Details'''
-
-
 class HomePageView(View):
 
     def get(self, request):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -106,7 +95,7 @@ class CreateRoom(View):
     def get(self, request, slug):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -142,8 +131,14 @@ class CreateRoom(View):
         allrooms = Rooms.objects.filter(hotel=hotel)
 
         for roomhotel in allrooms:
-            if roomhotel.room_number == int(room_number):
-                alert = 'Room number is exist'
+            try:
+                if roomhotel.room_number == int(room_number):
+                    alert = 'Room number is exist'
+                    messages.info(request, alert)
+                    route = '/add_room/{0}/'.format(hotel.url)
+                    return HttpResponseRedirect(route)
+            except:
+                alert = 'Enter room number!'
                 messages.info(request, alert)
                 route = '/add_room/{0}/'.format(hotel.url)
                 return HttpResponseRedirect(route)
@@ -154,7 +149,6 @@ class CreateRoom(View):
             messages.info(request, alert)
             route = '/add_room/{0}/'.format(hotel.url)
             return HttpResponseRedirect(route)
-
 
         room_type_name = room_type.split('/')[0]
         room_type = RoomTypes.objects.get(room_type_name=room_type_name, hotel=hotel)
@@ -193,10 +187,7 @@ class AddHotelView(View):
             new_hotel.hotel_description = form.cleaned_data['hotel_description']
             new_hotel.hotel_image = form.cleaned_data['hotel_image']
 
-            hotelname = form.cleaned_data['hotel_name']
-            hotelname = hotelname.split()
-            hotelname = ''.join(hotelname)
-
+            hotelname = ''.join(form.cleaned_data['hotel_name'].split())
             url = hotelname + 'Hotel'
             new_hotel.url = url
             new_hotel.save()
@@ -205,7 +196,7 @@ class AddHotelView(View):
     def get(self, request):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -226,7 +217,7 @@ class HotelDetailView(View):
 
     def get(self, request, slug):
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -248,7 +239,7 @@ class CreateAmenityView(View):
     def get(self, request, slug):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -275,7 +266,7 @@ class CreateAmenityView(View):
             amenity = form.save(commit=False)
             amenity_name = form.cleaned_data['amenity_name']
             if Amenity.objects.filter(hotel=hotel, amenity_name=amenity_name).exists():
-                alert = 'This amenity name exist'
+                alert = 'This amenity name is already exists'
                 messages.info(request, alert)
                 return HttpResponseRedirect('/amenity/' + hotel.url + '/')
 
@@ -294,7 +285,7 @@ class CreateCoefficientView(View):
 
         if not authentication(request):
 
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -336,7 +327,7 @@ class RoomsView(View):
 
     def get(self, request, slug):
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -356,7 +347,7 @@ class AddRoomTypeView(View):
     def get(self, request, slug):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -394,12 +385,13 @@ class AddRoomTypeView(View):
         context = {'user': user, 'hotel': hotel, 'form': form, 'room_type': room_type}
         return render(request, "add_room_type.html", context)
 
+
 class RoomDetailView(View):
 
     def get(self, request, slug, room_number):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -421,7 +413,7 @@ class HotelUpdateView(View):
     def get(self, request, slug):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -438,13 +430,19 @@ class HotelUpdateView(View):
         hotel.hotel_email = request.POST.get('email')
         hotel.hotel_url = request.POST.get('url')
         hotel.hotel_description = request.POST.get('description')
-        hotelname = hotel.hotel_name
-        hotelname = hotelname.split()
-        hotelname = ''.join(hotelname)
+        if not request.FILES.get('img'):
+            hotelname = ''.join(hotel.hotel_name.split())
 
-        url = hotelname + 'Hotel'
-        hotel.url = url
-        hotel.save()
+            url = hotelname + 'Hotel'
+            hotel.url = url
+            hotel.save()
+        else:
+            hotel.hotel_image = request.FILES.get('img')
+            hotelname = ''.join(hotel.hotel_name.split())
+
+            url = hotelname + 'Hotel'
+            hotel.url = url
+            hotel.save()
 
         bookings_hotels = list(Bookings.objects.filter(hotels=hotel))
         for booking in bookings_hotels:
@@ -460,7 +458,7 @@ class AmenityUpdate(View):
     def get(self, request, slug, amenity_name):
         try:
             if not authentication(request):
-                alert = 'NOT LOGIN'
+                alert = 'Please, login first'
                 messages.info(request, alert)
                 return HttpResponseRedirect('/login/')
 
@@ -490,7 +488,7 @@ class AmenityUpdate(View):
             amenity_id = request.POST.get("delete")
             amenity_for_del = Amenity.objects.get(id=amenity_id)
             amenity_for_del.delete()
-            alert = 'Successfully delete amenity'
+            alert = 'Successfully deleted amenity'
             messages.info(request, alert)
             route = '/amenity/{0}/'.format(hotel.url)
             return HttpResponseRedirect(route)
@@ -500,9 +498,8 @@ class TypeRoomUpdate(View):
 
     def get(self, request, slug, room_type_name):
 
-
             if not authentication(request):
-                alert = 'NOT LOGIN'
+                alert = 'Please, login first'
                 messages.info(request, alert)
                 return HttpResponseRedirect('/login/')
 
@@ -544,7 +541,7 @@ class CoefficientUpdate(View):
     def get(self, request, slug, id):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -585,7 +582,7 @@ class RateUpdateView(View):
     def get(self, request, slug, room_number):
 
         if not authentication(request):
-            alert = 'NOT LOGIN'
+            alert = 'Please, login first'
             messages.info(request, alert)
             return HttpResponseRedirect('/login/')
 
@@ -626,7 +623,7 @@ class RateUpdateView(View):
             print(allrooms)
             for roomhotel in allrooms:
                 if roomhotel.room_number == int(room_number):
-                    alert = 'Room number is exist'
+                    alert = 'Room number is already exists'
                     messages.info(request, alert)
                     route = '/room/{0}/{1}'.format(hotel.url, room.room_number)
                     return HttpResponseRedirect(route)
@@ -659,21 +656,27 @@ class RateUpdateView(View):
                 rate_amenity = RateAmenity(room=room, amenity=am)
                 rate_amenity.save()
 
-            alert = 'Successfully update rate'
+            alert = 'Successfully updated rate'
             messages.info(request, alert)
             route = '/rooms/{0}/'.format(hotel.url)
             return HttpResponseRedirect(route)
 
         else:
             room.delete()
-            alert = 'Successfully delete rate'
+            alert = 'Successfully deleted rate'
             messages.info(request, alert)
             route = '/rooms/{0}/'.format(hotel.url)
             return HttpResponseRedirect(route)
 
 
 class AddHotelImage(View):
+
     def get(self, request, slug):
+
+        if not authentication(request):
+            alert = 'Please, login first'
+            messages.info(request, alert)
+            return HttpResponseRedirect('/login/')
 
         user = request.session['data']
         user = User.objects.get(username=user)

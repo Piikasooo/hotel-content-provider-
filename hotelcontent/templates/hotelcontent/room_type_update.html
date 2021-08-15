@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Create New Room
+Update New Room
 {% endblock %}
 
 {% load crispy_forms_tags %}
@@ -32,15 +32,15 @@ Create New Room
   {% csrf_token %}
 
     <div class="mb-3">
-        <label class="form-label"><h5>Type room name</h5></label>
+        <label class="form-label"><h5>Room type name</h5></label>
         <input type="text" class="form-control" name="room_type_name" value="{{ room_type.room_type_name }}">
     </div>
      <div class="mb-3">
-        <label class="form-label"><h5>Type room description</h5></label>
+        <label class="form-label"><h5>Room type description</h5></label>
         <input type="text" class="form-control" name="room_type_description" value="{{ room_type.room_type_description }}">
     </div>
      <div class="mb-3">
-        <label class="form-label"><h5>Type room price</h5></label>
+        <label class="form-label"><h5>Room type price</h5></label>
         <input type="text" class="form-control" name="room_type_price" value="{{ room_type.room_type_price }}">
     </div>
 
