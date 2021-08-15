@@ -41,7 +41,7 @@ CreateRoomType
                 <tr>
                 <td>{{ roomtype.room_type_name }}</td>
                 <td>{{ roomtype.room_type_price }}</td>
-                <td><a href="{% url 'type_room_update' hotel.url  roomtype.room_type_name %}" class="btn btn-success">Details</a></td>
+                <td><a href="{% url 'type_room_update' hotel.url roomtype.room_type_name %}" class="btn btn-success">Details</a></td>
                 </tr>
             {% endfor %}
             </tbody>
