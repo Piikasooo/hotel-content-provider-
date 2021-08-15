@@ -36,9 +36,9 @@ Rooms <em>{{ hotel.hotel_name }}</em>
 
 <div class="p-3  ">
 
-        {% if not hotels %}
+        {% if not rooms %}
 
-    <h4>Room is not register</h4>
+    <h4>Room doesn't exist</h4>
     {% endif %}
 
         {% for room in rooms %}
@@ -67,9 +67,6 @@ Rooms <em>{{ hotel.hotel_name }}</em>
         {% endfor %}
 
 </div>
-
-
-
 
 
 {% endblock %}

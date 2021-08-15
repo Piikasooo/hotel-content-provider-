@@ -1,15 +1,8 @@
-import sys
 from datetime import date
-from io import BytesIO
 
-from django.core.files.uploadedfile import InMemoryUploadedFile
-
-from django.contrib.auth import get_user_model
-from django.db import models
 from django.urls import reverse
 from django.db import models
 from django.contrib.auth import get_user_model
-from PIL import Image
 
 User = get_user_model()
 
@@ -41,21 +34,6 @@ class Hotel(models.Model):
 
     def get_absolute_url(self):
         return reverse("hotel_detail", kwargs={"slug": self.url})
-    '''
-    def save(self, *args, **kwargs):
-        image = self.hotel_image
-        img = Image.open(image)
-        new_img = img.convert('RGB')
-        resized_new_img = new_img.resize((800, 600), Image.ANTIALIAS)
-        filestream = BytesIO()
-        resized_new_img.save(filestream, 'JPEG', quality=90)
-        filestream.seek(0)
-        self.hotel_image = InMemoryUploadedFile(
-            filestream, 'ImageField', self.hotel_image.name, 'jpeg/Image', sys.getsizeof(filestream), None
-        )
-        super().save(*args, **kwargs)
-
-'''
 
 
 class RoomTypes(models.Model):

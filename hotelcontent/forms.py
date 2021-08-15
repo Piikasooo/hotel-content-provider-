@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Hotel, RoomTypes, Amenity, Coefficient, Rooms
-from .models import Hotel, RoomTypes, Amenity, Coefficient, Rooms, HotelsImages
+from .models import Hotel, RoomTypes, Amenity, Coefficient, HotelsImages
 from datetime import date
 
 
@@ -11,8 +10,8 @@ class CreateAmenityForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['amenity_name'].label = 'Введите название amenity'
-        self.fields['amenity_price'].label = 'Введите цену за amenity'
+        self.fields['amenity_name'].label = 'Enter amenity name'
+        self.fields['amenity_price'].label = 'Enter amenity price'
 
     class Meta:
         model = Amenity
@@ -27,27 +26,27 @@ class CreateCoefficientForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['start_date'].label = 'Введите начало периода'
-        self.fields['end_date'].label = 'Введите конец периода'
-        self.fields['coefficient'].label = 'Введите коефициент'
+        self.fields['start_date'].label = 'Enter start date'
+        self.fields['end_date'].label = 'Enter end date'
+        self.fields['coefficient'].label = 'Enter coefficient'
 
     def clean_start_date(self):
         start_date = self.cleaned_data.get('start_date')
         if start_date < date.today():
-            raise forms.ValidationError(f'Начальная дата выбрана некоректно')
+            raise forms.ValidationError(f'Start date is invalid')
         return start_date
 
     def clean_end_date(self):
         start_date = self.cleaned_data.get('start_date')
         end_date = self.cleaned_data.get('end_date')
         if start_date > end_date:
-            raise forms.ValidationError(f'Конечная дата выбрана некоректно')
+            raise forms.ValidationError(f'End date is invalid')
         return end_date
 
     def clean(self):
         coefficient = self.cleaned_data.get('coefficient')
         if coefficient < 0:
-            raise forms.ValidationError(f'Коефицент введен неверно')
+            raise forms.ValidationError(f'Coefficient is invalid')
         return self.cleaned_data
 
     class Meta:
@@ -55,48 +54,20 @@ class CreateCoefficientForm(forms.ModelForm):
         fields = ['start_date', 'end_date', 'coefficient']
 
 
-class CreateRoomForm(forms.ModelForm):
-    hotel = forms.CharField(max_length=120)
-    room_type = forms.CharField(max_length=120)
-    room_number = forms.IntegerField()
-    room_price = forms.DecimalField(max_digits=6, decimal_places=2)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['room_type'].label = 'Введите тип комнаты'
-        self.fields['room_number'].label = 'Введите номер комнаты'
-
-    def clean_end_date(self):
-        start_date = self.cleaned_data['start_date']
-        end_date = self.cleaned_data['end_date']
-        if start_date > end_date:
-            raise forms.ValidationError(f'Конечная дата выбрана некоректно')
-        return start_date
-
-    def clean(self):
-        coefficient = self.cleaned_data['coefficient']
-        if coefficient < 0:
-            raise forms.ValidationError(f'Коефицент введен неверно')
-        return self.cleaned_data
-
-    class Meta:
-        model = Rooms
-        fields = ['room_type', 'room_number', 'room_price']
-
-
 class DeleteForm(forms.ModelForm):
+
     hotelname = forms.CharField(max_length=200)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['hotelname'].label = 'Введите название отеля'
+        self.fields['hotelname'].label = 'Enter hotel name'
 
     def clean(self):
         hotelname = self.cleaned_data['hotelname']
 
         # фильтровать только отели самого админа
         if not Hotel.objects.filter(hotel_name=hotelname).exists():
-            raise forms.ValidationError(f'Отель с даным названием "{hotelname}" не найден в системе')
+            raise forms.ValidationError(f"Hotel with name '{hotelname}' doesn't exist")
         return self.cleaned_data
 
     class Meta:
@@ -109,18 +80,18 @@ class LoginForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].label = 'Логин'
-        self.fields['password'].label = 'Пароль'
+        self.fields['username'].label = 'Username'
+        self.fields['password'].label = 'Password'
 
     def clean(self):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
         if not User.objects.filter(username=username).exists():
-            raise forms.ValidationError(f'Пользователь с логином "{username}" не найден в системе')
+            raise forms.ValidationError(f"User with username '{username}' doesn't exist")
         user = User.objects.filter(username=username).first()
         if user:
             if not user.check_password(password):
-                raise forms.ValidationError('Неверный пароль')
+                raise forms.ValidationError('Incorrect password')
         return self.cleaned_data
 
     class Meta:
@@ -137,35 +108,32 @@ class RegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].label = 'Логин'
-        self.fields['password'].label = 'Пароль'
-        self.fields['confirm_password'].label = 'Подтвердите пароль'
-        self.fields['phone'].label = 'Номер телефона'
-        self.fields['first_name'].label = 'Ваше имя'
-        self.fields['last_name'].label = 'Ваша фамилия'
-        self.fields['address'].label = 'Адрес'
-        self.fields['email'].label = 'EMAIL'
+        self.fields['username'].label = 'Username'
+        self.fields['password'].label = 'Password'
+        self.fields['confirm_password'].label = 'Confirm password'
+        self.fields['phone'].label = 'Phone number'
+        self.fields['first_name'].label = 'First name'
+        self.fields['last_name'].label = 'Last name'
+        self.fields['address'].label = 'Address'
+        self.fields['email'].label = 'Email'
 
     def clean_email(self):
         email = self.cleaned_data['email']
-        domain = email.split('.')[-1]
-        if domain in ['com', 'net']:
-            raise forms.ValidationError(f'Регистрация для домена "{domain}" невозможна')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError(f'Данный почтовый адресс уже зарегестрирован')
+            raise forms.ValidationError(f'This email address is already in use')
         return email
 
     def clean_username(self):
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
-            raise forms.ValidationError(f'Имя {username} занято')
+            raise forms.ValidationError(f'Username {username} is already in use')
         return username
 
     def clean(self):
         password = self.cleaned_data['password']
         confirm_password = self.cleaned_data['confirm_password']
         if password != confirm_password:
-            raise forms.ValidationError(f'Пароли не совпадают')
+            raise forms.ValidationError(f'Password mismatch')
         return self.cleaned_data
 
     class Meta:
@@ -175,32 +143,30 @@ class RegistrationForm(forms.ModelForm):
 
 
 class AddHotelForm(forms.ModelForm):
-    hotel_name = forms.CharField(required=True, label='Название')
-    hotel_long = forms.DecimalField(max_digits=9, decimal_places=6, required=True, label='Долгота')
-    hotel_lat = forms.DecimalField(max_digits=9, decimal_places=6, required=True, label='Широта')
-    hotel_email = forms.EmailField(required=True, label='Электронная почта')
-    hotel_url = forms.URLField(required=True, label='Сайт')
+    hotel_name = forms.CharField(required=True, label='Hotel name')
+    hotel_long = forms.DecimalField(max_digits=9, decimal_places=6, required=True, label='Longitude')
+    hotel_lat = forms.DecimalField(max_digits=9, decimal_places=6, required=True, label='Latitude')
+    hotel_email = forms.EmailField(required=True, label='Email')
+    hotel_url = forms.URLField(required=True, label='Hotel site')
     hotel_description = forms.TextInput()
-    hotel_image = forms.ImageField(label='Фото')
+    hotel_image = forms.ImageField(label='Hotel photo')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['hotel_description'].label = 'Описание'
+        self.fields['hotel_description'].label = 'Hotel description'
 
     def clean(self):
-        hotel_name = self.cleaned_data.get('hotel_name')
         hotel_long = self.cleaned_data.get('hotel_long')
         hotel_lat = self.cleaned_data.get('hotel_lat')
         hotel_email = self.cleaned_data.get('hotel_email')
         hotel_url = self.cleaned_data.get('hotel_url')
-        hotel_description = self.cleaned_data.get('hotel_description')
 
         if Hotel.objects.filter(hotel_long=hotel_long, hotel_lat=hotel_lat).exists():
-            raise forms.ValidationError(f'Отель по координатам {hotel_lat}, {hotel_long} уже зарегистрирован!')
+            raise forms.ValidationError(f'Hotel with coordinates {hotel_lat}, {hotel_long} is already in use!')
         elif Hotel.objects.filter(hotel_email=hotel_email).exists():
-            raise forms.ValidationError(f'Отель с электронным адресом {hotel_email} уже зарегистрирован!')
+            raise forms.ValidationError(f'Hotel with email {hotel_email} is already in use!')
         elif Hotel.objects.filter(hotel_url=hotel_url).exists():
-            raise forms.ValidationError(f'Отель с сайтом {hotel_url} уже зарегистрирован!')
+            raise forms.ValidationError(f'Hotel with site {hotel_url} is already in use!')
 
         return self.cleaned_data
 
@@ -218,9 +184,9 @@ class AddRoomTypeForm(forms.ModelForm):
 
     def __init__(self, hotel, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['room_type_name'].label = 'Введите название для типа комнаты'
-        self.fields['room_type_description'].label = 'Введите описание для даного типа комнаты'
-        self.fields['room_type_price'].label = 'Введите цену даного типа комнаты'
+        self.fields['room_type_name'].label = 'Enter room type name'
+        self.fields['room_type_description'].label = 'Enter room type description'
+        self.fields['room_type_price'].label = 'Enter room type price per night'
         self.hotel_field = hotel
 
     def clean(self):
@@ -230,7 +196,7 @@ class AddRoomTypeForm(forms.ModelForm):
         hotel = Hotel.objects.get(hotel_url=self.hotel_field)
 
         if RoomTypes.objects.filter(room_type_name=room_type_name, hotel=hotel).exists():
-            raise forms.ValidationError(f'Room type with a name {room_type_name}  already exists!')
+            raise forms.ValidationError(f'Room type with a name {room_type_name} already exists!')
 
         return self.cleaned_data
 
