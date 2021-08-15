@@ -6,6 +6,10 @@ CreateRoomType
 
 {% load crispy_forms_tags %}
 
+{% block link_page_name %}
+{% url 'hotel_detail' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
  Room Types of <em>{{ hotel.hotel_name }}</em>
 {% endblock %}
@@ -20,6 +24,10 @@ CreateRoomType
 {% block content %}
 
 <div class="container">
+    {% if not room_type %}
+
+    <h4>Room type is not register</h4>
+    {% endif %}
   <div class="row">
     <div class="col">
       {% if room_type %}
