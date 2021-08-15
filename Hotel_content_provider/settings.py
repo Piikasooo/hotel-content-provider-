@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'geopy',
 
     'crispy_forms',
     'hotelcontent',
@@ -54,23 +53,11 @@ DJOSER = {
     'SERIALIZERS': {},
 }
 
-DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': False,
-    'SERIALIZERS': {},
-}
-
 
 SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('JWT',),
 }
 
-
-SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('JWT',),
-}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -119,7 +106,7 @@ DATABASES = {
         'USER': env.str('DB_USER'),
         'PASSWORD': env.str('DB_PASS'),
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': env.str('DB_PORT'),
     }
 }
 
@@ -161,9 +148,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
+STATICFILES_DIRS =(
+    os.path.join(BASE_DIR, 'static_dev'),
+)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
