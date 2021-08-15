@@ -19,7 +19,11 @@
   <div class="container">
 <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
     <form class="container-fluid justify-content-start">
-        <a class="navbar-brand" href=""> {% block page_name %}{% endblock %} </a>
+        <a class="navbar-brand" href="
+        {% block link_page_name %}
+        {% endblock %}">
+            {% block page_name %}{% endblock %}
+        </a>
     </form>
 
         <form class="container-fluid justify-content-center">
