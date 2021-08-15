@@ -22,7 +22,6 @@ djangorestframework==3.12.4
 djangorestframework-simplejwt==4.7.2
 djoser==2.1.0
 environs==9.3.2
-greenlet==1.1.0
 django-environ==0.4.5
 greenlet==1.1.1
 idna==2.10
