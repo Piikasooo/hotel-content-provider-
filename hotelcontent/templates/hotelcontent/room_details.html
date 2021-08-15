@@ -4,6 +4,10 @@
 RoomsPage
 {% endblock %}
 
+{% block link_page_name %}
+{% url 'rooms' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
 Rooms <em>{{ hotel.hotel_name }}</em>
 {% endblock %}

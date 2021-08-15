@@ -6,6 +6,10 @@ CreateAmenity
 
 {% load crispy_forms_tags %}
 
+{% block link_page_name %}
+{% url 'hotel_detail' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
  Amenities of <em>{{ hotel.hotel_name }}</em>
 {% endblock %}
@@ -24,6 +28,11 @@ CreateAmenity
 
 
       <div class="col">
+          {% if not amenities %}
+    <h4>
+        Amenity is not register
+    </h4>
+    {% endif %}
       {% if amenities %}
 <nav class="navbar navbar-light bg-light">
   <div class="container-fluid">
