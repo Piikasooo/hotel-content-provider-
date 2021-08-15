@@ -6,6 +6,7 @@ CreateCoefficient
 
 {% load crispy_forms_tags %}
 
+
 {% block page_name %}
 Coefficients of <em>{{ hotel.hotel_name }}</em>
 {% endblock %}
@@ -22,6 +23,12 @@ Coefficients of <em>{{ hotel.hotel_name }}</em>
 <div class="container">
   <div class="row">
     <div class="col">
+
+        {% if not coefficients %}
+    <h4>
+        Coefficient is not register
+    </h4>
+    {% endif %}
 
       {% if coefficients %}
   <form action="" method="post">
