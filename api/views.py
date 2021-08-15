@@ -33,11 +33,11 @@ class HotelsView(APIView):
         return Response({"hotels in range " + str(rad) + "km": serializer.data})
 
 
-
 class CancelBooking(APIView):
     # permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         return Response("Cancel your booking by id!")
+
     def post(self, request):
         user_name = request.user.username
         user = User.objects.get(username=user_name)
@@ -75,12 +75,16 @@ class BookingView(APIView):
     # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        return Response("Create new Booking!")
+        return Response("Required fields for create new booking: "
+                        "start_date, "
+                        "end_date, "
+                        "room_number, "
+                        "hotel")
 
     def post(self, request):
         agent_name = request.user.username
-        agent = User.objects.get(username=agent_name)
-        agent1 = AgentReservation.objects.get(agent=agent)
+        agent_user = User.objects.get(username=agent_name)
+        agent = AgentReservation.objects.get(agent=agent_user)
 
         start_date, end_date = str_to_date(request)
 
@@ -93,7 +97,7 @@ class BookingView(APIView):
         room_num = int(request.data.get("room_number"))
         hotel = Hotel.objects.get(hotel_name=request.data.get("hotel"))
         room = Rooms.objects.get(room_number=room_num, hotel=hotel)
-# проврка на существование
+# проверка на существование
         if Rooms.objects.filter(
              Q(id=room.id)
              &
@@ -107,7 +111,7 @@ class BookingView(APIView):
 
         room = final_price(room=room, start_date=start_date, end_date=end_date, request=request)
 
-        booking = Bookings(agent_reservation=agent1,
+        booking = Bookings(agent_reservation=agent,
                            booking_stat=True,
                            hotels=hotel,
                            checkin=start_date,
