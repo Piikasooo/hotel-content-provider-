@@ -4,6 +4,10 @@
 RoomsPage
 {% endblock %}
 
+{% block link_page_name %}
+{% url 'hotel_detail' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
 Rooms <em>{{ hotel.hotel_name }}</em>
 {% endblock %}
@@ -31,6 +35,11 @@ Rooms <em>{{ hotel.hotel_name }}</em>
 {% endif %}
 
 <div class="p-3  ">
+
+        {% if not hotels %}
+
+    <h4>Room is not register</h4>
+    {% endif %}
 
         {% for room in rooms %}
 
