@@ -6,6 +6,10 @@ Create New Room
 
 {% load crispy_forms_tags %}
 
+{% block link_page_name %}
+{% url 'hotel_detail' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
 <em>{{ hotel.hotel_name }}</em> Hotel Update Info
 {% endblock %}
@@ -25,6 +29,8 @@ Create New Room
     <li><h3 class="text-danger">{{ message }}</h3></li>
     {% endfor %}
 </ul>
+
+
 {% endif %}
 
 <form method="post" class="ckeck">

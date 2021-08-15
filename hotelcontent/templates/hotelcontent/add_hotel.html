@@ -20,7 +20,7 @@
 {% block content %}
     <h1 class="mt-2"> Добавить отель </h1>
         <hr class="mt-0 mb-4" color="green">
-    <form method="post" >
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
 
