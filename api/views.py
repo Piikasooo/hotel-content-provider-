@@ -104,6 +104,7 @@ class BookingView(APIView):
         room = Rooms.objects.get(room_number=room_num, hotel=hotel)
 # проврка на существование
         if Rooms.objects.filter(
+             Q(id=room.id) &
              Q(bookings__booking_stat=True)
              & (
                  (Q(bookings__checkin__lt=end_date) & Q(bookings__checkout__gte=end_date))
