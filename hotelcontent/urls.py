@@ -1,13 +1,9 @@
-from .views import LoginView, RegistrationView, HomePageView, CreateRoom, AddHotelView, HotelDetailView, \
-    CreateAmenityView, RoomsView, AddRoomTypeView, RoomDetailView
-from .views import LoginView, RegistrationView, HomePageView, CreateRoom, \
-        AddHotelView, HotelDetailView, CreateAmenityView, \
-        CreateCoefficientView, HotelUpdateView, AmenityUpdate, TypeRoomUpdate, CoefficientUpdate, RateUpdateView, \
-    CreateAmenityView, RoomsView, AddRoomTypeView, RoomDetailView, AddHotelImage
-from .views import LoginView, RegistrationView, HomePageView, CreateRoom, AddHotelView, \
-    HotelDetailView, CreateAmenityView, CreateCoefficientView, HotelUpdateView
 from django.urls import path
 
+from .views import AmenityUpdate, TypeRoomUpdate, CoefficientUpdate, RateUpdateView, \
+    RoomsView, AddRoomTypeView, RoomDetailView, AddHotelImage
+from .views import LoginView, RegistrationView, HomePageView, CreateRoom, AddHotelView, \
+    HotelDetailView, CreateAmenityView, CreateCoefficientView, HotelUpdateView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),

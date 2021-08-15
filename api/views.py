@@ -10,7 +10,6 @@ from rest_framework import permissions
 
 
 class HotelsView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         hotels = Hotel.objects.all()
@@ -34,7 +33,8 @@ class HotelsView(APIView):
 
 
 class CancelBooking(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request):
         return Response("Cancel your booking by id!")
 
@@ -52,27 +52,8 @@ class CancelBooking(APIView):
             return Response("Error! Booking with this id doesn't exist!", status=status.HTTP_404_NOT_FOUND)
 
 
-class RoomsHotelView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, slug):
-        hotel = Hotel.objects.get(url=slug)
-        rooms = Rooms.objects.filter(hotel=hotel)
-        serializer = RoomSerializer(rooms, many=True)
-        return Response({"rooms": serializer.data})
-
-
-class RoomsView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        rooms = Rooms.objects.all()
-        serializer = RoomSerializer(rooms, many=True)
-        return Response({"rooms": serializer.data})
-
-
 class BookingView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         return Response("Required fields for create new booking: "
@@ -97,7 +78,7 @@ class BookingView(APIView):
         room_num = int(request.data.get("room_number"))
         hotel = Hotel.objects.get(hotel_name=request.data.get("hotel"))
         room = Rooms.objects.get(room_number=room_num, hotel=hotel)
-# проверка на существование
+        # проверка на существование
         if Rooms.objects.filter(
              Q(id=room.id)
              &
@@ -126,7 +107,6 @@ class BookingView(APIView):
 
 
 class RoomsFilterDateView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         rooms = Rooms.objects.all()
@@ -149,7 +129,7 @@ class RoomsFilterDateView(APIView):
 
 
 class MyBookingsView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         agent_name = request.user.username

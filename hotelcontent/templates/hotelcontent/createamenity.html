@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-CreateAmenity
+Create Amenity
 {% endblock %}
 
 {% load crispy_forms_tags %}
@@ -30,7 +30,7 @@ CreateAmenity
       <div class="col">
           {% if not amenities %}
     <h4>
-        Amenity is not register
+        Amenity doesn't exist
     </h4>
     {% endif %}
       {% if amenities %}
