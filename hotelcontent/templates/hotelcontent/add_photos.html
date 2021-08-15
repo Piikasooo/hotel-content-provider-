@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+AddPhoto
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block page_name %}
+ Room Types of <em>{{ hotel.hotel_name }}</em>
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
+
+{% block content %}
+<div>
+<nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">Add Photos </span>
+            </div>
+        </nav>
+
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <input type="submit" class="btn btn-success" value="Add Photo">
+        </form>
+</div>
+
+
+<hr>
+{% endblock %}

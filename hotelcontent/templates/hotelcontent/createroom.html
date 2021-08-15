@@ -6,6 +6,10 @@ Create New Room
 
 {% load crispy_forms_tags %}
 
+{% block link_page_name %}
+{% url 'rooms' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
 <em>{{ hotel.hotel_name }}</em> Hotel Create New Room
 {% endblock %}
