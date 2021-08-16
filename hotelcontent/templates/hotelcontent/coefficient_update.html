@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Update Coefficient
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block link_page_name %}
+{% url 'coefficient' hotel.url %}
+{% endblock %}
+
+{% block page_name %}
+<em>{{ hotel.hotel_name }} - coefficient</em>
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}</span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<form method="post" class="ckeck">
+  {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label"><h5>Start date</h5></label>
+        <input type="text" class="form-control" name="start_date" value="{{ coefficient.start_date }}">
+    </div>
+     <div class="mb-3">
+        <label class="form-label"><h5>End date</h5></label>
+        <input type="text" class="form-control" name="end_date" value="{{ coefficient.end_date }}">
+    </div>
+     <div class="mb-3">
+        <label class="form-label"><h5>Coefficient</h5></label>
+        <input type="text" class="form-control" name="coefficient" value="{{ coefficient.coefficient }}">
+    </div>
+
+    <hr>
+
+    <button name="update" value="coefficient.id" type="submit" class="btn btn-success">Update coefficient</button>
+    <button name="delete" value="{{ coefficient.id }}" type="submit" class="btn btn-danger">Delete coefficient</button>
+
+</form>
+
+{% endblock %}
