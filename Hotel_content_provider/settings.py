@@ -19,7 +19,7 @@ SECRET_KEY = env.str('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.str('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 # Application definition
 INSTALLED_APPS = [
@@ -105,7 +105,7 @@ DATABASES = {
         'NAME': env.str('DB_NAME'),
         'USER': env.str('DB_USER'),
         'PASSWORD': env.str('DB_PASS'),
-        'HOST': 'localhost',
+        'HOST': env.str('DB_HOST'),
         'PORT': env.str('DB_PORT'),
     }
 }
