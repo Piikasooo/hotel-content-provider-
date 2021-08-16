@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 
 {% block title %}
-CreateAmenity
+Create Amenity
 {% endblock %}
 
 {% load crispy_forms_tags %}
+
+{% block link_page_name %}
+{% url 'hotel_detail' hotel.url %}
+{% endblock %}
 
 {% block page_name %}
  Amenities of <em>{{ hotel.hotel_name }}</em>
@@ -21,7 +25,14 @@ CreateAmenity
 
 <div class="container">
   <div class="row">
-    <div class="col">
+
+
+      <div class="col">
+          {% if not amenities %}
+    <h4>
+        Amenity doesn't exist
+    </h4>
+    {% endif %}
       {% if amenities %}
 <nav class="navbar navbar-light bg-light">
   <div class="container-fluid">
@@ -33,13 +44,15 @@ CreateAmenity
     <tr>
       <th scope="col">Amenity name</th>
       <th scope="col">Amenity price</th>
+        <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody>
   {% for amenity in amenities %}
-    <tr>
+    <tr >
       <td>{{ amenity.amenity_name }}</td>
       <td>{{ amenity.amenity_price }}</td>
+        <td><a href="{% url 'amenity_update' hotel.url amenity.amenity_name %}" class="btn btn-success">Details</a></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -50,7 +63,6 @@ CreateAmenity
     <div class="col">
         <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
-
                 <span class="navbar-brand mb-0 h1"> Add New Amenity </span>
             </div>
         </nav>

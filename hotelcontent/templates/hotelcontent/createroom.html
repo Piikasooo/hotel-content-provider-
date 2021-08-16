@@ -6,6 +6,10 @@ Create New Room
 
 {% load crispy_forms_tags %}
 
+{% block link_page_name %}
+{% url 'rooms' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
 <em>{{ hotel.hotel_name }}</em> Hotel Create New Room
 {% endblock %}
@@ -31,13 +35,19 @@ Create New Room
   {% csrf_token %}
 
     <div class="mb-3">
-        <label for="formGroupExampleInput" class="form-label"><h5>Введите номер комнаты</h5></label>
+        <label for="formGroupExampleInput" class="form-label"><h5>Enter room number</h5></label>
         <input type="text" class="form-control" id="formGroupExampleInput" placeholder="For Example: 223" name="room_number">
     </div>
 
     <hr>
 
-    <h5>Доступные услуги для комнаты:</h5>
+    <h5>Available amenities:</h5>
+
+    {% if not amenities %}
+    <h4 >No amenities</h4>
+    <a href="{% url 'amenity' hotel.url %}" class="btn btn-info">Create Amenity</a>
+    {% endif %}
+
     {% for amenity in amenities %}
     <div class="form-check form-switch">
   <input class="form-check-input" type="checkbox" value="{{ amenity.amenity_name }}" id="{{ amenity.amenity_name }}" name="amenity">
@@ -47,10 +57,16 @@ Create New Room
     {% endfor %}
     <hr>
 
-    <h5>Доступные типы комнат:</h5>
+    <h5>Available room types:</h5>
 
+    {% if not room_types%}
+        <h4>Room types don't exist</h4>
+    <a href="{% url 'add_room_type' hotel.url %}" class="btn btn-info">Create amenity</a>
+    {% endif %}
+
+    {% if room_types %}
     <select class="form-select" aria-label="Default select example" name="dropdown">
-  <option selected>Select type room</option>
+  <option selected>Select room type</option>
 
             {% for room_type in room_types %}
 
@@ -60,15 +76,10 @@ Create New Room
             {% endfor %}
 
 </select>
-<hr>
-        <h5>Price Rate:</h5>
+    {% endif %}
 
-    <div class="input-group flex-nowrap">
-  <span class="input-group-text" id="addon-wrapping">$</span>
-  <input type="text" class="form-control" placeholder="Price" aria-label="Username" aria-describedby="addon-wrapping" readonly>
-</div>
     <hr>
-    <button type="submit" class="btn btn-success me-2">Add Room</button>
+    <button type="submit" class="btn btn-success me-2">Add New Room</button>
 
 </form>
 
