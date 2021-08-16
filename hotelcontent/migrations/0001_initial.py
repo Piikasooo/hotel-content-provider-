@@ -16,110 +16,320 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='AgentReservation',
+            name="AgentReservation",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('agent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "agent",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Пользователь",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Amenity',
+            name="Amenity",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amenity_name', models.CharField(max_length=200)),
-                ('amenity_price', models.DecimalField(decimal_places=2, max_digits=7)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("amenity_name", models.CharField(max_length=200)),
+                ("amenity_price", models.DecimalField(decimal_places=2, max_digits=7)),
             ],
         ),
         migrations.CreateModel(
-            name='Hotel',
+            name="Hotel",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('hotel_name', models.CharField(max_length=200)),
-                ('hotel_long', models.DecimalField(decimal_places=6, max_digits=9)),
-                ('hotel_lat', models.DecimalField(decimal_places=6, max_digits=9)),
-                ('hotel_email', models.EmailField(max_length=254)),
-                ('hotel_url', models.URLField()),
-                ('hotel_image', models.ImageField(blank=True, null=True, upload_to='hotels')),
-                ('hotel_description', models.TextField(default='Описание отеля')),
-                ('url', models.SlugField(max_length=160, unique=True)),
-                ('admin', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Администратор')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("hotel_name", models.CharField(max_length=200)),
+                ("hotel_long", models.DecimalField(decimal_places=6, max_digits=9)),
+                ("hotel_lat", models.DecimalField(decimal_places=6, max_digits=9)),
+                ("hotel_email", models.EmailField(max_length=254)),
+                ("hotel_url", models.URLField()),
+                (
+                    "hotel_image",
+                    models.ImageField(blank=True, null=True, upload_to="hotels"),
+                ),
+                ("hotel_description", models.TextField(default="Описание отеля")),
+                ("url", models.SlugField(max_length=160, unique=True)),
+                (
+                    "admin",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Администратор",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='RoomTypes',
+            name="RoomTypes",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('room_type_name', models.CharField(max_length=200)),
-                ('room_type_description', models.CharField(max_length=200)),
-                ('room_type_price', models.DecimalField(decimal_places=2, default=300, max_digits=6)),
-                ('hotel', models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='hotelcontent.hotel', verbose_name='Отель')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("room_type_name", models.CharField(max_length=200)),
+                ("room_type_description", models.CharField(max_length=200)),
+                (
+                    "room_type_price",
+                    models.DecimalField(decimal_places=2, default=300, max_digits=6),
+                ),
+                (
+                    "hotel",
+                    models.ForeignKey(
+                        default=0,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="hotelcontent.hotel",
+                        verbose_name="Отель",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Rooms',
+            name="Rooms",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('room_number', models.IntegerField()),
-                ('room_rate_price', models.DecimalField(decimal_places=2, default=200.0, max_digits=7)),
-                ('room_price', models.DecimalField(blank=True, decimal_places=2, default=200.0, max_digits=7)),
-                ('hotel', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='hotelcontent.hotel')),
-                ('room_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='hotelcontent.roomtypes')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("room_number", models.IntegerField()),
+                (
+                    "room_rate_price",
+                    models.DecimalField(decimal_places=2, default=200.0, max_digits=7),
+                ),
+                (
+                    "room_price",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, default=200.0, max_digits=7
+                    ),
+                ),
+                (
+                    "hotel",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="hotelcontent.hotel",
+                    ),
+                ),
+                (
+                    "room_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="hotelcontent.roomtypes",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='RateAmenity',
+            name="RateAmenity",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amenity', models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='hotelcontent.amenity', verbose_name='Amenity')),
-                ('room', models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, related_name='amenities', to='hotelcontent.rooms', verbose_name='Комната')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "amenity",
+                    models.ForeignKey(
+                        default=0,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="hotelcontent.amenity",
+                        verbose_name="Amenity",
+                    ),
+                ),
+                (
+                    "room",
+                    models.ForeignKey(
+                        default=0,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="amenities",
+                        to="hotelcontent.rooms",
+                        verbose_name="Комната",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='HotelsImages',
+            name="HotelsImages",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('hotel_photo', models.ImageField(null=True, upload_to='hotels')),
-                ('photo_description', models.CharField(blank=True, max_length=50)),
-                ('hotel', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='hotel', to='hotelcontent.hotel')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("hotel_photo", models.ImageField(null=True, upload_to="hotels")),
+                ("photo_description", models.CharField(blank=True, max_length=50)),
+                (
+                    "hotel",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="hotel",
+                        to="hotelcontent.hotel",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Coefficient',
+            name="Coefficient",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_date', models.DateField(default=datetime.date(2021, 8, 15))),
-                ('end_date', models.DateField(default=datetime.date(2021, 8, 15))),
-                ('coefficient', models.DecimalField(decimal_places=2, default=1.1, max_digits=7)),
-                ('hotel', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='hotelcontent.hotel', verbose_name='Отель')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("start_date", models.DateField(default=datetime.date(2021, 8, 15))),
+                ("end_date", models.DateField(default=datetime.date(2021, 8, 15))),
+                (
+                    "coefficient",
+                    models.DecimalField(decimal_places=2, default=1.1, max_digits=7),
+                ),
+                (
+                    "hotel",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="hotelcontent.hotel",
+                        verbose_name="Отель",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Bookings',
+            name="Bookings",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('booking_stat', models.BooleanField(default=False)),
-                ('checkin', models.DateField()),
-                ('checkout', models.DateField()),
-                ('rate_price', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
-                ('room_number', models.IntegerField(blank=True)),
-                ('hotel', models.CharField(blank=True, max_length=200)),
-                ('agent_reservation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='hotelcontent.agentreservation')),
-                ('hotels', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='hotelcontent.hotel')),
-                ('room', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='hotelcontent.rooms')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("booking_stat", models.BooleanField(default=False)),
+                ("checkin", models.DateField()),
+                ("checkout", models.DateField()),
+                (
+                    "rate_price",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=7),
+                ),
+                ("room_number", models.IntegerField(blank=True)),
+                ("hotel", models.CharField(blank=True, max_length=200)),
+                (
+                    "agent_reservation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="hotelcontent.agentreservation",
+                    ),
+                ),
+                (
+                    "hotels",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="hotelcontent.hotel",
+                    ),
+                ),
+                (
+                    "room",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="hotelcontent.rooms",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='amenity',
-            name='hotel',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='hotelcontent.hotel', verbose_name='Отель'),
+            model_name="amenity",
+            name="hotel",
+            field=models.ForeignKey(
+                default=0,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="hotelcontent.hotel",
+                verbose_name="Отель",
+            ),
         ),
         migrations.CreateModel(
-            name='Admin',
+            name="Admin",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('phone', models.CharField(blank=True, max_length=20, null=True, verbose_name='Номер телефона')),
-                ('address', models.CharField(blank=True, max_length=255, null=True, verbose_name='Адрес')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "phone",
+                    models.CharField(
+                        blank=True,
+                        max_length=20,
+                        null=True,
+                        verbose_name="Номер телефона",
+                    ),
+                ),
+                (
+                    "address",
+                    models.CharField(
+                        blank=True, max_length=255, null=True, verbose_name="Адрес"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Пользователь",
+                    ),
+                ),
             ],
         ),
     ]

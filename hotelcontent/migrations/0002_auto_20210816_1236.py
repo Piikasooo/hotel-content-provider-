@@ -7,18 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('hotelcontent', '0001_initial'),
+        ("hotelcontent", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='coefficient',
-            name='end_date',
+            model_name="coefficient",
+            name="end_date",
             field=models.DateField(default=datetime.date(2021, 8, 16)),
         ),
         migrations.AlterField(
-            model_name='coefficient',
-            name='start_date',
+            model_name="coefficient",
+            name="start_date",
             field=models.DateField(default=datetime.date(2021, 8, 16)),
         ),
     ]
