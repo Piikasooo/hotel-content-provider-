@@ -4,6 +4,10 @@
 RoomsPage
 {% endblock %}
 
+{% block link_page_name %}
+{% url 'rooms' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
 Rooms <em>{{ hotel.hotel_name }}</em>
 {% endblock %}
@@ -63,6 +67,8 @@ Rooms <em>{{ hotel.hotel_name }}</em>
 
         <hr>
         <p class="card-text">Total Price: {{ room.room_rate_price}}</p>
+    <a href="{% url 'rate_update' hotel.url room.room_number %}" class="btn btn-success">Update rate</a>
+
     </div>
 </div>
 

@@ -4,6 +4,10 @@
 RoomsPage
 {% endblock %}
 
+{% block link_page_name %}
+{% url 'hotel_detail' hotel.url %}
+{% endblock %}
+
 {% block page_name %}
 Rooms <em>{{ hotel.hotel_name }}</em>
 {% endblock %}
@@ -19,10 +23,23 @@ Rooms <em>{{ hotel.hotel_name }}</em>
     <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
 {% endblock %}
 
+
 {% block content %}
 
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 <div class="p-3  ">
+
+        {% if not rooms %}
+
+    <h4>Room doesn't exist</h4>
+    {% endif %}
 
         {% for room in rooms %}
 
@@ -50,9 +67,6 @@ Rooms <em>{{ hotel.hotel_name }}</em>
         {% endfor %}
 
 </div>
-
-
-
 
 
 {% endblock %}

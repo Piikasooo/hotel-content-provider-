@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Update amenity
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block link_page_name %}
+{% url 'amenity' hotel.url %}
+{% endblock %}
+
+{% block page_name %}
+<em>{{ hotel.hotel_name }} - amenity {{ amenity.amenity_name}}</em>
+{% endblock %}
+
+{% block end %}
+    <form class="container-fluid justify-content-end">
+        <span class="navbar-text"> User: {{ user.username }}    </span>
+    </form>
+    <a href="{% url 'login' %}" class="btn btn-outline-secondary">LogOut</a>
+{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li><h3 class="text-danger">{{ message }}</h3></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<form method="post" class="ckeck">
+  {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label"><h5>Amenity name</h5></label>
+        <input type="text" class="form-control" name="amenity_name" value="{{ amenity.amenity_name }}">
+    </div>
+     <div class="mb-3">
+        <label class="form-label"><h5>Amenity price</h5></label>
+        <input type="text" class="form-control" name="amenity_price" value="{{ amenity.amenity_price }}">
+    </div>
+
+    <hr>
+
+    <button name="update" value="amenity.id" type="submit" class="btn btn-success">Update amenity</button>
+    <button name="delete" value="{{ amenity.id }}" type="submit" class="btn btn-danger">Delete amenity</button>
+
+</form>
+
+{% endblock %}

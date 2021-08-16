@@ -6,6 +6,10 @@ HotelDetail
 
 {% load crispy_forms_tags %}
 
+{% block link_page_name%}
+{% url 'homepage' %}
+{% endblock %}
+
 {% block page_name %}
  <em>{{ hotel.hotel_name }}</em> Hotel Details
 {% endblock %}
@@ -89,8 +93,6 @@ HotelDetail
 </div>
 
 </div>
-
-
 
 
 {% endblock %}

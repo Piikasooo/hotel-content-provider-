@@ -17,7 +17,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rooms
-        fields = ['hotel', 'room_number', 'room_type', 'room_rate_price', 'amenities']
+        fields = ['hotel', 'room_number', 'room_type', 'amenities']
 
 
 class RoomFilterSerializer(serializers.ModelSerializer):
@@ -27,14 +27,11 @@ class RoomFilterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rooms
-        fields = ['hotel', 'room_number', 'room_type', 'amenities', 'room_rate_price']
+        fields = ['hotel', 'room_number', 'room_type', 'amenities', 'room_price']
 
 
 class BookingSerializer(serializers.ModelSerializer):
 
-    hotels = serializers.CharField()
-    room = serializers.CharField()
-
     class Meta:
         model = Bookings
-        fields = ['id', 'hotels', 'room', 'checkin', 'checkout', 'rate_price', 'booking_stat']
+        fields = ['id', 'booking_stat', 'hotel', 'room_number', 'checkin', 'checkout', 'rate_price']
