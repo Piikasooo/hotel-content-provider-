@@ -1,5 +1,6 @@
-from openexchange.currency_api import get_currency
 import datetime
+
+from openexchange.currency_api import get_currency
 
 
 def convert_currency(price_uah, request):
