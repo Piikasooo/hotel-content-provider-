@@ -709,6 +709,7 @@ class AddHotelImage(View):
         context = {'user': user, 'hotel': hotel, 'form': form}
         return render(request, "add_photos.html", context)
 
+
 # utils.py
 def authentication(request):
     try:
