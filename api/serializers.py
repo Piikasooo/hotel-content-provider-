@@ -20,17 +20,7 @@ class HotelsSerializer(serializers.ModelSerializer):
         ]
 
 
-class RoomSerializer(serializers.ModelSerializer):
-    hotel = serializers.CharField()
-    room_type = serializers.CharField()
-    amenities = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = Rooms
-        fields = ["hotel", "room_number", "room_type", "amenities"]
-
-
-class RoomFilterSerializer(serializers.ModelSerializer):
+class RateSerializer(serializers.ModelSerializer):
     hotel = serializers.CharField()
     room_type = serializers.CharField()
     amenities = serializers.StringRelatedField(many=True)
@@ -54,10 +44,24 @@ class BookingSerializer(serializers.ModelSerializer):
         ]
 
 
-class BodySerializer(serializers.Serializer):
-    lat = serializers.FloatField()
-    long = serializers.FloatField()
-    rad = serializers.FloatField()
+class FilterHotelsSerializer(serializers.Serializer):
+    latitude = serializers.FloatField()
+    longitude = serializers.FloatField()
+    radius = serializers.FloatField()
 
-    class Meta:
-        fields = ["lat", "long", "rad"]
+
+class CancelBookingSerializer(serializers.Serializer):
+    booking_id = serializers.IntegerField()
+
+
+class CreateBookingSerializer(serializers.Serializer):
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+    room_number = serializers.IntegerField()
+    hotel = serializers.CharField()
+
+
+class RateFilterSerializer(serializers.Serializer):
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+    currency = serializers.CharField()
