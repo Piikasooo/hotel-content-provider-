@@ -155,6 +155,7 @@ class RegistrationForm(forms.ModelForm):
 
 
 class AddHotelForm(forms.ModelForm):
+
     hotel_name = forms.CharField(required=True, label="Hotel name")
     hotel_long = forms.DecimalField(
         max_digits=9, decimal_places=6, required=True, label="Longitude"
