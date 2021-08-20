@@ -714,7 +714,7 @@ class AddHotelImage(View):
             hotel_image.hotel = hotel
             hotel_image.save()
 
-            return HttpResponseRedirect("/add_hotel_image/" + hotel.url + "/")
+            return HttpResponseRedirect("/" + hotel.url + "/")
 
         context = {"user": user, "hotel": hotel, "form": form}
         return render(request, "add_photos.html", context)
