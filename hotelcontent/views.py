@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -21,9 +21,10 @@ from .models import Coefficient, Bookings
 
 class LoginView(View):
     def get(self, request):
-
         try:
-            del request.session["data"]
+            print(type(request.user))    # django.utils.functional.SimpleLazyObject
+            del request.session["data"]  # str
+            logout(request)
             form = LoginForm(request.POST or None)
             context = {"form": form}
             return render(request, "login.html", context)
@@ -79,7 +80,6 @@ class RegistrationView(View):
 
 class HomePageView(View):
     def get(self, request):
-
         if not authentication(request):
             alert = "Please, login first"
             messages.info(request, alert)
@@ -294,7 +294,6 @@ class CreateCoefficientView(View):
     def get(self, request, slug):
 
         if not authentication(request):
-
             alert = "Please, login first"
             messages.info(request, alert)
             return HttpResponseRedirect("/login/")
@@ -392,7 +391,6 @@ class AddRoomTypeView(View):
 
 class RoomDetailView(View):
     def get(self, request, slug, room_number):
-
         if not authentication(request):
             alert = "Please, login first"
             messages.info(request, alert)
@@ -714,7 +712,7 @@ class AddHotelImage(View):
             hotel_image.hotel = hotel
             hotel_image.save()
 
-            return HttpResponseRedirect("/add_hotel_image/" + hotel.url + "/")
+            return HttpResponseRedirect("/" + hotel.url + "/")
 
         context = {"user": user, "hotel": hotel, "form": form}
         return render(request, "add_photos.html", context)
