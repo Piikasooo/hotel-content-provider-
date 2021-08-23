@@ -6,7 +6,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env: |
+    env: 
       SECRET_KEY: 'secret-key'
       DB_PASS: "db-pass"
       DB_USER: "db-user"
