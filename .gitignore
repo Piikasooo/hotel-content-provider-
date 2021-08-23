@@ -3,11 +3,8 @@ __pycache__/
 *.pyc
 *$py.class
 Hotel_content_provider/__pycache__/
-Hotel_content_provider/__pycache__/
 hotelcontent/__pycache__/
-hotelcontent/__pycache__/models.cpython-39.pyc
-hotelcontent/__pycache__/urls.cpython-39.pyc
-hotelcontent/__pycache__/views.cpython-39.pyc
+
 
 
 
