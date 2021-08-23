@@ -3,20 +3,31 @@ name: Python application
 on: [push]
 
 jobs:
-  build:
+  run_tests:
 
     runs-on: ubuntu-latest
     env: 
       SECRET_KEY: 'secret-key'
-      DB_PASS: "db-pass"
-      DB_USER: "db-user"
-      DB_NAME: "db-name"
+      DB_PASS: "postgres"
+      DB_USER: "postgres"
+      DB_NAME: "github_actions"
       DEBUG: True
       DB_PORT: '5432'
       DB_HOST: 'localhost'
       ALLOWED_HOST: '127.0.0.1'
       API_KEY: 'some-api-key'
-
+    
+    services:
+      db:
+        image: postgres:12.3-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        options: --mount type=tmpfs,destination=/var/lib/postgresql/data --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
