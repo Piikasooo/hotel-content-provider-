@@ -6,6 +6,16 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env: |
+      SECRET_KEY = 'secret-key'
+      DB_PASS = "db-pass"
+      DB_USER = "db-user"
+      DB_NAME = "db-name"
+      DEBUG = True
+      DB_PORT = '5432'
+      DB_HOST = 'localhost'
+      ALLOWED_HOST = '127.0.0.1'
+      API_KEY = 'some-api-key'
 
     steps:
     - uses: actions/checkout@v1
