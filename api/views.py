@@ -35,13 +35,14 @@ class HotelsView(APIView):
         """Filters hotels by coordinates within a certain radius"""
 
         filter_hotels = []
-        lat = float(request.data.get("latitude"))
-        long = float(request.data.get("longitude"))
-        rad = float(request.data.get("radius"))
+
+        lat = request.data.get("latitude")
+        long = request.data.get("longitude")
+        rad = request.data.get("radius")
 
         for p in Hotel.objects.raw(
-            "SELECT * FROM hotelcontent_hotel WHERE earth_distance(ll_to_earth({0},{1}),ll_to_earth(float8("
-            "hotel_lat), float8(hotel_long))) / 1000 <= {2}".format(lat, long, rad)
+            "SELECT * FROM hotelcontent_hotel WHERE earth_distance(ll_to_earth(%s,%s),ll_to_earth(float8("
+            "hotel_lat), float8(hotel_long))) / 1000 <= %s", [lat, long, rad]
         ):
             filter_hotels.append(p)
 
