@@ -2,10 +2,14 @@ import csv
 import datetime
 import os.path
 import time
-
+from environs import Env
 from openexchangerate import OpenExchangeRates
 
-client = OpenExchangeRates(api_key="6ff8323a7eed443693dd7d6bfbe2490b")
+
+env = Env()
+env.read_env()
+
+client = OpenExchangeRates(api_key=env.str('API_KEY'))
 
 
 def now_currency():
