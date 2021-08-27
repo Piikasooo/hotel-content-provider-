@@ -23,6 +23,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path("", HomePageView.as_view(), name="homepage"),
     path("login/", LoginView.as_view(), name="login"),
     path("registration/", RegistrationView.as_view(), name="registration"),
     path("homepage/", HomePageView.as_view(), name="homepage"),
