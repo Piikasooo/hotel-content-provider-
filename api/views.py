@@ -11,7 +11,11 @@ from .functions import str_to_date, final_price_list, final_price
 from .serializers import (
     HotelsSerializer,
     BookingSerializer,
-    FilterHotelsSerializer, CancelBookingSerializer, CreateBookingSerializer, RateSerializer, RateFilterSerializer,
+    FilterHotelsSerializer,
+    CancelBookingSerializer,
+    CreateBookingSerializer,
+    RateSerializer,
+    RateFilterSerializer,
 )
 
 
@@ -24,18 +28,21 @@ class HotelsView(APIView):
         serializer = HotelsSerializer(hotels, many=True)
         return Response({"hotels": serializer.data})
 
-    @swagger_auto_schema(request_body=FilterHotelsSerializer, responses={200: HotelsSerializer})
+    @swagger_auto_schema(
+        request_body=FilterHotelsSerializer, responses={200: HotelsSerializer}
+    )
     def post(self, request):
         """Filters hotels by coordinates within a certain radius"""
 
         filter_hotels = []
-        lat = float(request.data.get("latitude"))
-        long = float(request.data.get("longitude"))
-        rad = float(request.data.get("radius"))
+
+        lat = request.data.get("latitude")
+        long = request.data.get("longitude")
+        rad = request.data.get("radius")
 
         for p in Hotel.objects.raw(
-                "SELECT * FROM hotelcontent_hotel WHERE earth_distance(ll_to_earth({0},{1}),ll_to_earth(float8("
-                "hotel_lat), float8(hotel_long))) / 1000 <= {2}".format(lat, long, rad)
+            "SELECT * FROM hotelcontent_hotel WHERE earth_distance(ll_to_earth(%s,%s),ll_to_earth(float8("
+            "hotel_lat), float8(hotel_long))) / 1000 <= %s", [lat, long, rad]
         ):
             filter_hotels.append(p)
 
@@ -49,7 +56,10 @@ class CancelBooking(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    @swagger_auto_schema(request_body=CancelBookingSerializer, responses={200: "This booking has been canceled"})
+    @swagger_auto_schema(
+        request_body=CancelBookingSerializer,
+        responses={200: "This booking has been canceled"},
+    )
     def post(self, request):
         """Cancel booking by id"""
         user_name = request.user.username
@@ -73,7 +83,9 @@ class BookingView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    @swagger_auto_schema(request_body=CreateBookingSerializer, responses={201: "Successfully booked"})
+    @swagger_auto_schema(
+        request_body=CreateBookingSerializer, responses={201: "Successfully booked"}
+    )
     def post(self, request):
         """Book the rate by checkin, checkout date, room number and hotel"""
         agent_name = request.user.username
@@ -97,18 +109,18 @@ class BookingView(APIView):
         room = Rooms.objects.get(room_number=room_num, hotel=hotel)
 
         if Rooms.objects.filter(
-                Q(id=room.id)
-                & Q(bookings__booking_stat=True)
-                & (
-                        (
-                                Q(bookings__checkin__lt=end_date)
-                                & Q(bookings__checkout__gte=end_date)
-                        )
-                        | (
-                                Q(bookings__checkin__lte=start_date)
-                                & Q(bookings__checkout__gt=start_date)
-                        )
+            Q(id=room.id)
+            & Q(bookings__booking_stat=True)
+            & (
+                (
+                    Q(bookings__checkin__lt=end_date)
+                    & Q(bookings__checkout__gte=end_date)
                 )
+                | (
+                    Q(bookings__checkin__lte=start_date)
+                    & Q(bookings__checkout__gt=start_date)
+                )
+            )
         ).exists():
             return Response(
                 "Not created, Booking is exist", status=status.HTTP_400_BAD_REQUEST
@@ -136,7 +148,9 @@ class BookingView(APIView):
 class RatesFilterDateView(APIView):
     """Endpoint for viewing available rates"""
 
-    @swagger_auto_schema(request_body=RateFilterSerializer, responses={200: RateSerializer})
+    @swagger_auto_schema(
+        request_body=RateFilterSerializer, responses={200: RateSerializer}
+    )
     def post(self, request):
         """Filter available rates by checkin and checkout date"""
         start_date, end_date = str_to_date(request)
@@ -145,14 +159,14 @@ class RatesFilterDateView(APIView):
             Rooms.objects.exclude(
                 Q(bookings__booking_stat=True)
                 & (
-                        (
-                                Q(bookings__checkin__lt=end_date)
-                                & Q(bookings__checkout__gte=end_date)
-                        )
-                        | (
-                                Q(bookings__checkin__lte=start_date)
-                                & Q(bookings__checkout__gt=start_date)
-                        )
+                    (
+                        Q(bookings__checkin__lt=end_date)
+                        & Q(bookings__checkout__gte=end_date)
+                    )
+                    | (
+                        Q(bookings__checkin__lte=start_date)
+                        & Q(bookings__checkout__gt=start_date)
+                    )
                 )
             )
         )
