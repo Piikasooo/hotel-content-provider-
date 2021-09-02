@@ -16,7 +16,7 @@ Agent can:
 
   
 ## Project deployed on DigitalOcean
-https://hotel-content-provider-g8j7y.ondigitalocean.app/
+http://68.183.9.108/
 
 ## Deploy on your local machine
 1. Install requirements
