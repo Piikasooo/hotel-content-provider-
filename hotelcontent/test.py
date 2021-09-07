@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 from hotelcontent.views import (
     LoginView,
     RegistrationView,
@@ -13,6 +13,20 @@ from hotelcontent.views import (
     CreateRoom,
 )
 from django.urls import reverse, resolve
+from unittest.mock import Mock, patch
+from hotelcontent.models import Hotel
+
+
+class TestView(TestCase):
+
+    @patch('hotelcontent.views.AddHotelView._create_hotel')
+    def test_add_hotel_POST(self, mock_create_hotel):
+        data = {}
+        mock_create_hotel.is_valid.return_value = True
+        response = self.client.post(reverse('add_hotel'), data=data)
+        self.assertEquals(response.status_code, 302)
+        self.assertFalse(Hotel.objects.filter(hotel_name='hotel_test').exists())
+        print(mock_create_hotel.call_args)
 
 
 class TestUrls(SimpleTestCase):
